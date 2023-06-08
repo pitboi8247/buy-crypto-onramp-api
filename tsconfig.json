@@ -19,6 +19,11 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "importHelpers": true,
+    "baseUrl": "src",
+    "outDir": "./dist",
+    "paths": {
+      "@app": ["./app.ts"],
+    },
   },
   "exclude": [
     "dist",

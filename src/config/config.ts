@@ -1,15 +1,16 @@
 import * as z from 'zod';
+require("dotenv").config({ path: "./env.local" })
 
 const envsSchema = z.object({
   NODE_ENV: z.enum(['production', 'development']),
   PORT: z.number().default(8080),
-  API_KEY_TOKEN: z.string({ required_error: "Private key required for signing"}).nonempty(),
+  PRIVATE_KEY: z.string({ required_error: "Private key required for signing"}).nonempty(),
 }).nonstrict();
 
 const envVars = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
-  API_KEY_TOKEN: process.env.API_KEY_TOKEN,
+  PRIVATE_KEY: process.env.API_KEY_TOKEN,
 };
 
 try {
@@ -24,5 +25,5 @@ try {
 export default {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
-  xApiKey: envVars.API_KEY_TOKEN,
+  privateKey: envVars.PRIVATE_KEY,
 };
