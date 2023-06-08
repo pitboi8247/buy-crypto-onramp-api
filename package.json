@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "ts-node src/app.ts",
-    "server": "nodemon src/app.ts",
+    "start": "ts-node src/server.ts",
+    "server": "nodemon src/server.ts",
     "lint": "eslint ./src/**/*.ts",
     "lint:fix": "eslint **/*.ts --fix",
     "prettier": "prettier --check \"{*.js,!(node*)**/*.ts}\"",

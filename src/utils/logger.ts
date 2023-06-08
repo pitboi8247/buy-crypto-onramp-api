@@ -22,6 +22,7 @@ const errorTemplate = ({ timestamp, level, message, stack }) => {
   if (stack) tmpl += ` \n ${stack}`;
   return tmpl;
 };
+
 const logger: winston.Logger = winston.createLogger({
   level: config.env === 'development' ? 'debug' : 'info',
   format: winston.format.combine(

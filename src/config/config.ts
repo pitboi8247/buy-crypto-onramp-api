@@ -1,5 +1,5 @@
+require('dotenv').config()
 import * as z from 'zod';
-require("dotenv").config({ path: "./env.local" })
 
 const envsSchema = z.object({
   NODE_ENV: z.enum(['production', 'development']),
