@@ -1,23 +1,38 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Router } from 'express';
 import cors from 'cors';
-import { APIError } from './utils/APIError';
 import { config as _c } from 'dotenv';
 import httpLogger from './utils/httpLogger';
-//need to put in config
+import { fetchBscAvailability, fetchBscQuote, generateBinanceConnectSig, generateMercuryoSig, generateMoonPaySig } from './api';
+import errorHandling from './middleware/errorHandlingMiddleware';
+import httpContext from 'express-http-context';
+
 
 const app = express();
+const router: Router = express.Router()
+
+//router routes
+router.route("/generate-mercuryo-sig").post(generateMercuryoSig)
+router.route("/generate-moonpay-sig").post(generateMoonPaySig)
+router.route("/generate-binance-connect-sig").post(generateBinanceConnectSig)
+router.route("/fetch-bsc-quote").post(fetchBscQuote)
+router.route("/fetch-bsc-availability").post(fetchBscAvailability)
 
 app.use(express.json());
+
 app.use(cors({ origin: '*' }));
+
+app.get('/', (req, res) => {
+  res.status(200).send({ result: 'ok' });
+});
+app.use('/', router)
+app.use(httpContext.middleware);
 app.use(httpLogger.successHandler);
 app.use(httpLogger.errorHandler);
-app.use((err: APIError, req: Request, res: Response, next: NextFunction) => {
-  err.status = err.status || 500;
-  if (!(err instanceof APIError)) {
-    err = new APIError((err as any).message, null, (err as any).status);
-  }
-  res.status(err.status).send(err.toJson());
-});
+
+app.use(errorHandling);
+
+
+
 
 
 export default app

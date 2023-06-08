@@ -3,7 +3,7 @@ import app from './app';
 import logger from './utils/logger';
 import errorHandler from './utils/errorHandler';
 
-const port = process.env.PORT;
+const port = Number(process.env.PORT);
 
 const server: Server = app.listen(port, (): void => {
   logger.info(`Aapplication listens on PORT: ${port}`);

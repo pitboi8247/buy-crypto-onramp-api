@@ -3,14 +3,14 @@ import * as z from 'zod';
 
 const envsSchema = z.object({
   NODE_ENV: z.enum(['production', 'development']),
-  PORT: z.number().default(8080),
+  PORT: z.string().default('8080'),
   PRIVATE_KEY: z.string({ required_error: "Private key required for signing"}).nonempty(),
 }).nonstrict();
 
 const envVars = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
-  PRIVATE_KEY: process.env.API_KEY_TOKEN,
+  PRIVATE_KEY: process.env.PRIVATE_KEY,
 };
 
 try {
