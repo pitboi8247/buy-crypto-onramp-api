@@ -1,27 +1,27 @@
-import app from './app';
 import { NextFunction, Request, Response } from 'express';
 
 import qs from 'qs';
 import crypto from 'crypto';
-import { post } from './services/axios';
+import { post } from '../../services/axios';
 import {
   ParsedBinanceConnectGet,
   ParsedBinanceConnectPOST,
   ParsedMercuryGet,
   ParsedMercuryPOST,
+  bscPriceQuoteSchema,
   bscQuotepayloadSchema,
   checkIpPayloadSchema,
   payloadSchema,
   validateBinanceConnectSchema,
   validateMercuryoSchema,
   zQueryMoonPay,
-} from './typeValidation/validation';
-import { chars } from './typeValidation/types';
-import { populatBuildTradeParams, populateMoonPayUrl, populate_GET_RequestSigContent, sign } from './utils/rsa_sig';
-import { BINANCE_CONNECT_API_URL, BINANCE_CONNECT_URL, MOONPAY_URL } from './config/constants';
-import ErrorResponse from './utils/errorResponse';
-import { APIError } from './utils/APIError';
-import config from './config/config';
+} from '../../typeValidation/validation';
+import { chars } from '../../typeValidation/types';
+import { populatBuildTradeParams, populateMoonPayUrl, populate_GET_RequestSigContent, sign } from '../../utils/rsa_sig';
+import { BINANCE_CONNECT_API_URL, BINANCE_CONNECT_URL, MOONPAY_URL } from '../../config/constants';
+import ErrorResponse from '../../utils/errorResponse';
+import { APIError } from '../../utils/APIError';
+import config from '../../config/config';
 
 export const generateMercuryoSig = async (req: Request, res: Response, next: NextFunction) => {
   const queryString =
@@ -81,7 +81,7 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
     const moonPayTradeUrl = populateMoonPayUrl({ ...parsed.data, encodedWalletAddresses });
     const originalUrl = `${MOONPAY_URL}${moonPayTradeUrl}`;
 
-    const signature = crypto.createHmac('sha256', 'hd').update(new URL(originalUrl).search).digest('base64');
+    const signature = crypto.createHmac('sha256', config.moonpaySecretKey).update(new URL(originalUrl).search).digest('base64');
     const returnData = `${originalUrl}&signature=${encodeURIComponent(signature)}`;
 
     res.json({ urlWithSignature: returnData });
@@ -144,18 +144,18 @@ export const generateBinanceConnectSig = async (req: Request, res: Response, nex
 export const fetchBscQuote = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body;
-    const validPayload = bscQuotepayloadSchema.safeParse(payload);
+    const validPayload = bscPriceQuoteSchema.safeParse(payload);
     if (!validPayload.success) {
       throw new Error('payload has the incorrect shape. please check you types');
     }
     const merchantCode = 'pancake_swap_test';
     const timestamp = Date.now().toString();
 
-    const payloadString = JSON.stringify(validPayload.data);
+    const payloadString = JSON.stringify(payload);
     const contentToSign = `${payloadString}&merchantCode=${merchantCode}&timestamp=${timestamp}`;
 
-    const signature = sign(contentToSign, process.env.PRIVATE_KEY.replace(/\\n/g, '\n'));
-    const endpoint = `${BINANCE_CONNECT_API_URL}/fiat/v1/public/open-api/connect/get-quote`;
+    const signature = sign(contentToSign, config.privateKey.replace(/\\n/g, '\n'));
+    const endpoint = `https://sandbox.bifinitypay.com/bapi/fiat/v1/public/open-api/connect/get-quote`;
 
     // NEED TO LOK UP API DOCS FOR RET TYPE WILL DO LATER
     post<any, any>(endpoint, payload, {
@@ -167,13 +167,13 @@ export const fetchBscQuote = async (req: Request, res: Response, next: NextFunct
       },
     })
       .then((response) => {
-        res.status(response.status).json(response.data);
+        res.status(200).json(response);
       })
       .catch((error) => {
         if (error.response) {
           res.status(error.response.status).json(error.response.data);
         } else {
-          res.status(500).json({ error: 'Internal Server Error' });
+          res.status(500).json({ error: 'Internal Server Error', message: error.message });
         }
       });
   } catch (error: any) {
@@ -199,7 +199,7 @@ export const fetchBscAvailability = async (req: Request, res: Response, next: Ne
     const contentToSign = `${payloadString}&merchantCode=${merchantCode}&timestamp=${timestamp}`;
 
     const signature = sign(contentToSign, process.env.PRIVATE_KEY.replace(/\\n/g, '\n'));
-    const endpoint = `${BINANCE_CONNECT_API_URL}/fiat/v1/public/open-api/connect/check-ip-address`;
+    const endpoint = `https://sandbox.bifinitypay.com/bapi/fiat/v1/public/open-api/connect/check-ip-address`;
 
     post<any, any>(endpoint, payload, {
       headers: {
@@ -210,7 +210,7 @@ export const fetchBscAvailability = async (req: Request, res: Response, next: Ne
       },
     })
       .then((response) => {
-        res.status(response.status).json(response.data);
+        res.status(200).json(response.data);
       })
       .catch((error) => {
         if (error.response) {
