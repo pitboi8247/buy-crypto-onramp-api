@@ -1,28 +1,28 @@
-import { Request, Response, NextFunction } from 'express';
+import ErrorResponse from '../utils/errorResponse';
+import { NextFunction, Response } from 'express';
 
-import httpStatus from 'http-status';
-import AppError from '../utils/appError';
-import errorHandler from '../utils/errorHandler';
+type ErrorType = {
+  name: string;
+  statusCode: number;
+  message: string;
+};
+const errorHandler = (err: any, req: any, res: Response, next: NextFunction) => {
+  let error: ErrorType = { ...err };
+  error.message = err.message;
 
-// catch all unhandled errors
-const errorHandling = (
-  error: Error,
-  req: Request,
-  res: Response,
-  // eslint-disable-next-line
-  next: NextFunction,
-) => {
-  errorHandler.handleError(error);
-  const isTrusted = errorHandler.isTrustedError(error);
-  const httpStatusCode = isTrusted
-    ? (error as AppError).httpCode
-    : httpStatus.INTERNAL_SERVER_ERROR;
-  const responseError = isTrusted
-    ? error.message
-    : httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
-  res.status(httpStatusCode).json({
-    error: responseError,
+  if (err.code === 11000) {
+    const message: string = 'Duplicate Field Value';
+    error = new ErrorResponse(message, 400);
+  } else if (error.name === 'ValidationError') {
+    //need better types for this
+    const message: string[] = Object.values(err.errors).map((val: any) => val.message);
+    error = new ErrorResponse(message[0], 400);
+  }
+
+  res.status(error.statusCode || 500).json({
+    success: false,
+    error: error,
   });
 };
 
-export default errorHandling;
+export default errorHandler;
