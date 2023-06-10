@@ -14,6 +14,6 @@ router.route("/generate-binance-connect-sig").post(generateBinanceConnectSig).ge
 router.route("/fetch-bsc-quote").post(fetchBscQuote)
 router.route("/fetch-bsc-availability").post(fetchBscAvailability)
 
-router.route("/fetch-mercuryo-quote").get(fetchProviderQuotes)
+router.route("/fetch-mercuryo-quote").post(fetchProviderQuotes)
 
 export default router

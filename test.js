@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const getMercuryoSig = async () => {
   try {
-    const res = await axios.get('http://localhost:8080/generate-mercuryo-sig', {
+    const res = await axios.get('https://pcs-onramp-api.com/generate-mercuryo-sig', {
   
       method: 'GET',
       params: {
@@ -84,7 +84,7 @@ const getMoonPaySig = async () => {
 
 const generateBscSig = async () => {
   try {
-    const res = await axios.post('http://localhost:8080/generate-binance-connect-sig', {
+    const res = await axios.post('https://pcs-onramp-api.com/generate-binance-connect-sig', {
       fiatCurrency: 'USD',
       cryptoCurrency: 'BUSD',
       amount: '100',
@@ -98,3 +98,21 @@ const generateBscSig = async () => {
   }
 };
 
+const fetchBSCQuote = async () => {
+  const payload = {
+  
+    fiatCurrency: 'USD',
+          cryptoCurrency: 'BTC',
+          fiatAmount: '100',
+          // cryptoNetwork: 'BSC',
+          // paymentMethod: 'CARD',
+  }
+  try {
+    const res = await axios.post('http://localhost:8080/fetch-mercuryo-quote', payload);
+    const result = res.data;
+    console.log(result);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+fetchBSCQuote()
