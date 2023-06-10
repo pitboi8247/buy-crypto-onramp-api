@@ -51,30 +51,18 @@ const getMoonPaySig = async () => {
     'usdc_optimism',
     'usdc_polygon',
   ]
+  const p = {
+      type: 'MOONPAY',
+      defaultCurrencyCode: 'usd',
+      baseCurrencyCode: 'btc',
+      baseCurrencyAmount: '100',
+      redirectUrl: 'https://pancakeswap.finance',
+      theme: 'dark',
+      walletAddresses:  '0x13E7f71a3E8847399547CE127B8dE420B282E4E4',
+  }
   try {
-    const res = await axios.post('http://localhost:8080/generate-moonpay-sig', {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        type: 'MOONPAY',
-        defaultCurrencyCode: 'usd',
-        baseCurrencyCode: 'btc',
-        baseCurrencyAmount: '100',
-        redirectUrl: 'https://pancakeswap.finance',
-        theme: 'dark',
-        walletAddresses: JSON.stringify(
-          MOONPAY_SUPPORTED_CURRENCY_CODES.reduce(
-            (acc, currencyCode) => ({
-              ...acc,
-              [currencyCode]: '0x13E7f71a3E8847399547CE127B8dE420B282E4E4',
-            }),
-            {},
-          ),
-        ),
-      })});
+    const res = await axios.post('http://localhost:8081/generate-moonpay-sig', p 
+     );
     const result = res.data;
     console.log(result);
   } catch (error) {
@@ -108,11 +96,11 @@ const fetchBSCQuote = async () => {
           // paymentMethod: 'CARD',
   }
   try {
-    const res = await axios.post('http://localhost:8080/fetch-mercuryo-quote', payload);
+    const res = await axios.post('https://pcs-onramp-api.com/fetch-mercuryo-quote', payload);
     const result = res.data;
-    console.log(result);
+    console.log(result.value);
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
-fetchBSCQuote()
+getMoonPaySig()

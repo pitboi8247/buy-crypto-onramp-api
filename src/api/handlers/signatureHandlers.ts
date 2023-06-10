@@ -81,7 +81,7 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
     const moonPayTradeUrl = populateMoonPayUrl({ ...parsed.data, encodedWalletAddresses });
     const originalUrl = `${MOONPAY_URL}${moonPayTradeUrl}`;
 
-    const signature = crypto.createHmac('sha256', config.moonpaySecretKey).update(new URL(originalUrl).search).digest('base64');
+    const signature = crypto.createHmac('sha256', config.mercuryoSecretKey || '').update(new URL(originalUrl).search).digest('base64');
     const returnData = `${originalUrl}&signature=${encodeURIComponent(signature)}`;
 
     res.json({ urlWithSignature: returnData });
