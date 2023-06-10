@@ -17,5 +17,5 @@ export const populatBuildTradeParams = (params) => {
 }
 
 export const populateMoonPayUrl = (moonPayParams) => {
-  return `&theme=${moonPayParams.theme}&colorCode=#82DBE3&defaultCurrencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddresses=${moonPayParams.walletAddresses}`
+  return `&theme=${moonPayParams.theme}&colorCode=#82DBE3&defaultCurrencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddresses=${moonPayParams.encodedWalletAddresses}`
 }
