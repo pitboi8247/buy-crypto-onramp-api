@@ -100,13 +100,13 @@ const fetchBSCQuote = async () => {
     fiatCurrency: 'USD',
           cryptoCurrency: 'BTC',
           fiatAmount: '100',
-          // cryptoNetwork: 'BSC',
-          // paymentMethod: 'CARD',
+          cryptoNetwork: 'BSC',
+          paymentMethod: 'CARD',
   }
   try {
-    const res = await axios.post('https://pcs-onramp-api.com/fetch-mercuryo-quote', payload);
+    const res = await axios.post('http://localhost:8081/fetch-mercuryo-quote', payload);
     const result = res.data;
-    console.log(result.value);
+    console.log(result);
   } catch (error) {
     console.error('Error fetching data:', error);
   }
