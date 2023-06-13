@@ -81,8 +81,12 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
     const moonPayTradeUrl = populateMoonPayUrl({ ...parsed.data, encodedWalletAddresses });
     const originalUrl = `${MOONPAY_URL}${moonPayTradeUrl}`;
 
-    const signature = crypto.createHmac('sha256', config.mercuryoSecretKey || '').update(new URL(originalUrl).search).digest('base64');
-    const returnData = `${originalUrl}&signature=${encodeURIComponent(signature)}`;
+    const signature = crypto
+      .createHmac('sha256', config.moonpaySecretKey)
+      .update(new URL(originalUrl).search)
+      .digest('base64')
+
+    const returnData = `${originalUrl}&signature=${encodeURIComponent(signature)}`
 
     res.json({ urlWithSignature: returnData });
   } catch (error) {
@@ -143,6 +147,7 @@ export const generateBinanceConnectSig = async (req: Request, res: Response, nex
 
 export const fetchBscQuote = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log('my name is evan')
     const payload = req.body;
     const validPayload = bscPriceQuoteSchema.safeParse(payload);
     if (!validPayload.success) {
@@ -157,6 +162,7 @@ export const fetchBscQuote = async (req: Request, res: Response, next: NextFunct
     const signature = sign(contentToSign, config.privateKey.replace(/\\n/g, '\n'));
     const endpoint = `https://sandbox.bifinitypay.com/bapi/fiat/v1/public/open-api/connect/get-quote`;
 
+console.log(contentToSign, endpoint)
     // NEED TO LOK UP API DOCS FOR RET TYPE WILL DO LATER
     post<any, any>(endpoint, payload, {
       headers: {
