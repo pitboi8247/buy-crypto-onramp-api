@@ -24,7 +24,7 @@ export async function fetchMoonpayQuote(baseAmount: number, currencyCode: string
     }
   }
 
-export async function fetchMercuryoQuote(fiatCurrency: string, cryptoCurrency: string, amount: number) {
+export async function fetchMercuryoQuote(fiatCurrency: string, cryptoCurrency: string, amount: string) {
   // Fetch data from endpoint 2
   try {
     const response = await axios.get(

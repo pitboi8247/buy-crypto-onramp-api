@@ -12,7 +12,7 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
       throw new Error('payload has the incorrect shape. please check you types');
     }
     const responsePromises = [
-      await fetchMercuryoQuote('USD', 'BTCgr', 100),
+      await fetchMercuryoQuote('USD', 'ETH', '100'),
       await fetchMoonpayQuote(100, 'usd', 'btc'),
       await fetchBinanceConnectQuote({}),
     ];
