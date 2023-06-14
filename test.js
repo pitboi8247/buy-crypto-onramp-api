@@ -110,9 +110,9 @@ const fetchBSCQuote = async () => {
           paymentMethod: 'CARD',
   }
   try {
-    const res = await axios.post('https://pcs-onramp-api.com/fetch-mercuryo-quote', payload);
-    const result = res.data;
-    console.log(result.responsePromises[0].value);
+    const res = await axios.post('http://localhost:8081/fetch-mercuryo-quote', payload);
+    const result = res;
+    console.log(result.data.result);
   } catch (error) {
     console.error('Error fetching data:', error);
   }

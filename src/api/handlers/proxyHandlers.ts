@@ -6,19 +6,16 @@ import { providerQuotesSchema } from '../../typeValidation/validation';
 // to-do
 export const fetchProviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
   const payload = req.body;
+  const { fiatCurrency, cryptoCurrency, fiatAmount } = req.body
   try {
     const validPayload = providerQuotesSchema.safeParse(payload);
     if (!validPayload.success) {
       throw new Error('payload has the incorrect shape. please check you types');
     }
-    const responsePromises = [
-      await fetchMercuryoQuote('USD', 'ETH', '100'),
-      await fetchMoonpayQuote(100, 'usd', 'btc'),
-      await fetchBinanceConnectQuote({}),
-    ];
-    const responses = await Promise.allSettled(responsePromises);
+    const result = await await fetchMercuryoQuote(fiatCurrency, cryptoCurrency, fiatAmount)
+   
 
-    return res.status(200).json({ responsePromises: responses });
+    return res.status(200).json({ result });
   } catch (error: any) {
     return next(new APIError(error.message, error?.reason, error?.status));
   }
