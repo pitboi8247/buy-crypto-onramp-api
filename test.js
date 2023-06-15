@@ -132,7 +132,7 @@ const fetchBSCQuote = async () => {
   const payload = {
   
     fiatCurrency: 'USD',
-          cryptoCurrency: 'BTC',
+          cryptoCurrency: 'ETH',
           fiatAmount: '100',
          
   }
