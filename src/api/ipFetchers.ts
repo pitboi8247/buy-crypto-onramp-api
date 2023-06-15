@@ -7,7 +7,7 @@ export async function fetchMoonpayAvailability(userIp: string) {
     // Fetch data from endpoint 2
     try {
         const response = await axios.get(
-            `https://api.moonpay.com/v4/ip_address?apiKey=pk_test_1Ibe44lMglFVL8COOYO7SEKnIBrzrp54&ipAddress=${userIp}`,
+            `https://api.moonpay.com/v4/ip_address?apiKey=ppk_live_Ch5fat39X8NvMZwih2k7hK4sDrKanSPz&ipAddress=${userIp}`,
             {
               headers: {
                 Accept: 'application/json',

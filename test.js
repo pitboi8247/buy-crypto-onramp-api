@@ -144,4 +144,4 @@ const fetchBSCQuote = async () => {
     console.error('Error fetching data:', error);
   }
 };
-fetchBSCQuote()
+getMoonPaySig()
