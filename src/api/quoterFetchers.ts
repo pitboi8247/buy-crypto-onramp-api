@@ -29,7 +29,7 @@ export async function fetchMercuryoQuote(fiatCurrency: string, cryptoCurrency: s
   try {
     const response = await axios.get(
       `${MERCURYO_ENDPOINT}?from=${fiatCurrency.toUpperCase()}&to=${cryptoCurrency.toUpperCase()}&amount=${
-        amount + 3
+        amount
       }&widget_id=64d1f9f9-85ee-4558-8168-1dc0e7057ce6`,
       {
         headers: {

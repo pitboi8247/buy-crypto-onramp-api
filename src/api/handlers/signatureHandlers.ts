@@ -9,16 +9,14 @@ import {
   ParsedMercuryGet,
   ParsedMercuryPOST,
   bscPriceQuoteSchema,
-  bscQuotepayloadSchema,
   checkIpPayloadSchema,
-  payloadSchema,
   validateBinanceConnectSchema,
   validateMercuryoSchema,
   zQueryMoonPay,
 } from '../../typeValidation/validation';
 import { chars } from '../../typeValidation/types';
 import { populatBuildTradeParams, populateMoonPayUrl, populate_GET_RequestSigContent, sign } from '../../utils/rsa_sig';
-import { BINANCE_CONNECT_API_URL, BINANCE_CONNECT_URL, MOONPAY_URL } from '../../config/constants';
+import { BINANCE_CONNECT_URL, MOONPAY_URL } from '../../config/constants';
 import ErrorResponse from '../../utils/errorResponse';
 import { APIError } from '../../utils/APIError';
 import config from '../../config/config';
@@ -34,19 +32,18 @@ export const generateMercuryoSig = async (req: Request, res: Response, next: Nex
   const secret = await crypto.webcrypto.subtle.importKey(
     'raw',
     new TextEncoder().encode(config.mercuryoSecretKey),
-    { name: 'HMAC', hash: 'SHA-256' },
+    { name: 'HMAC', hash: 'SHA-512' },
     false,
     ['sign', 'verify'],
   );
 
   if (req.method === 'GET') {
+
     const parsed = validateMercuryoSchema('mercuryoGET', queryParsed, res) as ParsedMercuryGet;
-
     const { walletAddress } = parsed.data;
-    const encodedMessage: Uint8Array = new TextEncoder().encode(`${walletAddress}${config.mercuryoSecretKey}`);
-    const signature = await crypto.webcrypto.subtle.sign('HMAC', secret, encodedMessage);
+    const hash = crypto.createHash('sha512').update(`${walletAddress}${config.mercuryoSecretKey}`).digest('hex')
+    return res.json({ signature: hash });
 
-    return res.json({ signature: btoa(String.fromCharCode(...new Uint8Array(signature))) });
   } else if (req.method === 'POST') {
     const parsed = validateMercuryoSchema('mercuryoPOST', queryParsed, res) as ParsedMercuryPOST;
 
