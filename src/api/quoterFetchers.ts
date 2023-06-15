@@ -3,7 +3,7 @@ import { post } from '../services/axios';
 import { sign } from '../utils/rsa_sig';
 
 const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
-const MERCURYO_ENDPOINT = `https://sandbox-api.mrcr.io/v1.6/widget/buy/rate`;
+const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/v1.6/widget/buy/rate`;
 
 export async function fetchMoonpayQuote(baseAmount: number, currencyCode: string, outputCurrency: string) {
     // Fetch data from endpoint 2

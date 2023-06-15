@@ -1,15 +1,43 @@
 const axios = require('axios');
 
+const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
+const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
+
+async function fetchMercuryoQuote(fiatCurrency, cryptoCurrency, amount) {
+  // Fetch data from endpoint 2
+  try {
+    const response = await axios.get(
+      `${MERCURYO_ENDPOINT}?from=${fiatCurrency.toUpperCase()}&to=${cryptoCurrency.toUpperCase()}&amount=${
+        amount
+      }&widget_id=308e14df-01d7-4f35-948c-e17fa64bbc0d`,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const result = response.data;
+    return { status: 'MERCURYO', result: result, error: false };
+  } catch (error) {
+    return { code: 'MERCURYO', result: error, error: true };
+  }
+}
+
+// for bsc connect we need to axios.get our own custom api endpoint as even get requests require
+// sig validation
+
 const getMercuryoSig = async () => {
   try {
-    const res = await axios.get('http://localhost:8081/generate-mercuryo-sig', {
+    // const res = await axios.get('http://localhost:8081/generate-mercuryo-sig', {
   
-      method: 'GET',
-      params: {
-        walletAddress: "0x13E7f71a3E8847399547CE127B8dE420B282E4E4",
-      }
-    });
-    const result = res.data;
+    //   method: 'GET',
+    //   params: {
+    //     walletAddress: "0x13E7f71a3E8847399547CE127B8dE420B282E4E4",
+    //   }
+    // });
+    const res = await fetchMercuryoQuote('USD', 'ETH', '100')
+    const result = res;
     console.log(result);
   } catch (error) {
     console.error('Error fetching data:', error);
