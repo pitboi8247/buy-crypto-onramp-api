@@ -2,6 +2,8 @@ import axios from 'axios';
 import { post } from '../services/axios';
 import { sign } from '../utils/rsa_sig';
 import { checkIpPayloadSchema } from '../typeValidation/validation';
+const express = require('express');
+const geoip = require('geoip-lite');
 
 export async function fetchMoonpayAvailability(userIp: string) {
     // Fetch data from endpoint 2
@@ -75,3 +77,25 @@ export async function fetchBinanceConnectAvailability(userIp: any) {
     return { code: 'BINANCE_CONNECT', result: error, error: true };
   }
 }
+export const fetchIpDetails = async(req, res) => {
+  const ipAddress = 
+  req.headers['cf-connecting-ip'] ||
+  req.headers['x-real-ip'] ||
+  req.headers['x-forwarded-for'] ||
+  req.socket.remoteAddress || ''
+  
+  const geo = geoip.lookup(ipAddress);
+
+  const country = geo ? geo.country : null;
+  const state = geo && geo.country === 'US' ? geo.region : null;
+
+  const response = {
+    ipAddress,
+    country,
+    state
+  };
+
+  res.json(response);
+}
+
+

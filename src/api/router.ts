@@ -3,6 +3,7 @@ import express, { Router } from "express";
 import { fetchBscAvailability, fetchBscQuote, generateBinanceConnectSig, generateMercuryoSig, generateMoonPaySig } from './handlers/signatureHandlers';
 import { fetchProviderQuotes } from "./handlers/proxyHandlers";
 import { fetchBinanceConnectQuote } from "./quoterFetchers";
+import { fetchIpDetails } from "./ipFetchers";
 
 
 const router: Router = express.Router()
@@ -15,5 +16,6 @@ router.route("/fetch-bsc-quote").post(fetchBscQuote)
 router.route("/fetch-bsc-availability").post(fetchBscAvailability)
 
 router.route("/fetch-mercuryo-quote").post(fetchProviderQuotes)
+router.route('/user-ip').get(fetchIpDetails)
 
 export default router

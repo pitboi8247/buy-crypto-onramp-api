@@ -137,11 +137,12 @@ const fetchBSCQuote = async () => {
          
   }
   try {
-    const res = await axios.post('https://pcs-onramp-api.com/fetch-mercuryo-quote', payload);
+    const res = await axios.get('http://localhost:8081/user-ip');
+    console.log(res)
     const result = res;
     console.log(result.data.result);
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
-getMoonPaySig()
+fetchBSCQuote()

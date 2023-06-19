@@ -43,6 +43,8 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.0.2",
     "express": "^5.0.0-alpha.8",
+    "express-http-context": "^1.2.4",
+    "geoip-lite": "^1.4.7",
     "morgan": "^1.10.0",
     "qs": "^6.11.2",
     "runtime-node-refresh": "^1.0.7",
