@@ -16,4 +16,9 @@ app.get('/', (req, res) => {
 app.use('/', router)
 app.use(errorHandler);
 
+app.get('/ip', (req, res) => {
+  const ip = req.ip
+  res.send(ip)
+})
+
 export default app
