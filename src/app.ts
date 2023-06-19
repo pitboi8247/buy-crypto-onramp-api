@@ -18,7 +18,11 @@ app.use('/', router)
 app.use(errorHandler);
 
 app.get('/ip', (req, res) => {
-  const ip = req.ip
+  const ip = 
+    req.headers['cf-connecting-ip'] ||
+    req.headers['x-real-ip'] ||
+    req.headers['x-forwarded-for'] ||
+    req.socket.remoteAddress || ''
   res.send(ip)
 })
 
