@@ -137,7 +137,7 @@ const fetchBSCQuote = async () => {
          
   }
   try {
-    const res = await axios.get('http://localhost:8081/fetch-mercuryo-availability', { params: { userIp: '156.146.51.133'}});
+    const res = await axios.get('https://pcs-onramp-api.com/fetch-mercuryo-availability?userIp=156.146.51.134');
     // console.log(res)
     const result = res;
     console.log(result.data.result.result);

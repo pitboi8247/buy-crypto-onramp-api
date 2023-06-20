@@ -41,7 +41,7 @@ export async function fetchMercuryoQuote(fiatCurrency: string, cryptoCurrency: s
       },
     );
     const result = response.data;
-    return { status: 'MERCURYO', result: result, error: false };
+    return { code: 'MERCURYO', result: result, error: false };
   } catch (error) {
     return { code: 'MERCURYO', result: error, error: true };
   }
@@ -84,7 +84,7 @@ export async function fetchBinanceConnectQuote(payloada: any) {
     })
     const result = response
 
-  return { status: 'BINANCE_CONNECT', result: result, error: false };
+  return { code: 'BINANCE_CONNECT', result: result, error: false };
 }
   catch (error) {
     return { code: 'BINANCE_CONNECT', result: error, error: true };
