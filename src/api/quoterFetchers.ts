@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { post } from '../services/axios';
 import { sign } from '../utils/rsa_sig';
+import config from '../config/config';
 
 const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
 const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
@@ -10,7 +11,7 @@ export async function fetchMoonpayQuote(baseAmount: number, currencyCode: string
     // Fetch data from endpoint 2
     try {
         const response = await axios.get(
-            `${MOONPAY_EBDPOINT}${outputCurrency.toLowerCase()}/buy_quote/?apiKey=pk_live_Ch5fat39X8NvMZwih2k7hK4sDrKanSPz&baseCurrencyAmount=${baseAmount}&&baseCurrencyCode=${currencyCode.toLowerCase()}`,
+            `${MOONPAY_EBDPOINT}${outputCurrency.toLowerCase()}/buy_quote/?apiKey=${config.moonpayLiveKey}&baseCurrencyAmount=${baseAmount}&&baseCurrencyCode=${currencyCode.toLowerCase()}`,
             {
               headers: {
                 Accept: 'application/json',

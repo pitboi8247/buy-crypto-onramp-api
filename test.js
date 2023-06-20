@@ -137,12 +137,14 @@ const fetchBSCQuote = async () => {
          
   }
   try {
-    const res = await axios.get('http://localhost:8081/user-ip');
-    console.log(res)
+    const res = await axios.get('http://localhost:8081/fetch-mercuryo-availability', { params: { userIp: '156.146.51.133'}});
+    // console.log(res)
     const result = res;
-    console.log(result.data.result);
+    console.log(result.data.result.result);
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
+
+
 fetchBSCQuote()

@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { fetchBinanceConnectQuote, fetchMercuryoQuote, fetchMoonpayQuote } from '../quoterFetchers';
+import { fetchMercuryoQuote } from '../quoterFetchers';
 import { APIError } from '../../utils/APIError';
 import { providerQuotesSchema } from '../../typeValidation/validation';
+import { fetchBinanceConnectAvailability, fetchMercuryoAvailability, fetchMoonpayAvailability } from '../ipFetchers';
 
 // to-do
 export const fetchProviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
@@ -20,3 +21,33 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
     return next(new APIError(error.message, error?.reason, error?.status));
   }
 };
+
+export const fetchMoonPayIpAvailability = async(req: Request, res: Response, next: NextFunction) => {
+  const userIp = req.query.userIp.toString();
+  try {
+    const result = await fetchMoonpayAvailability(userIp)
+    return res.status(200).json({ result });
+  } catch (error: any) {
+    return next(new APIError(error.message, error?.reason, error?.status));
+  }
+}
+
+export const fetchMercuryoIpAvailability = async(req: Request, res: Response, next: NextFunction) => {
+  const userIp = req.query.userIp.toString();
+  try {
+    const result = await fetchMercuryoAvailability(userIp)
+    return res.status(200).json({ result });
+  } catch (error: any) {
+    return next(new APIError(error.message, error?.reason, error?.status));
+  }
+}
+
+export const fetchBinanceConnectIpAvailability = async(req: Request, res: Response, next: NextFunction) => {
+  const {userIp} = req.body
+  try {
+    const result = await fetchBinanceConnectAvailability(userIp)
+    return res.status(200).json({ result });
+  } catch (error: any) {
+    return next(new APIError(error.message, error?.reason, error?.status));
+  }
+}

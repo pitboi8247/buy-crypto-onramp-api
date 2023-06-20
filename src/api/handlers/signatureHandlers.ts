@@ -222,6 +222,7 @@ export const fetchBscAvailability = async (req: Request, res: Response, next: Ne
           res.status(500).json({ error: 'Internal Server Error' });
         }
       });
+    // return res.status(200).json({succes: true})
   } catch (error: any) {
     return next(new APIError(error.message, error?.reason, error?.status));
   }

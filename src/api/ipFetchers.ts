@@ -2,14 +2,14 @@ import axios from 'axios';
 import { post } from '../services/axios';
 import { sign } from '../utils/rsa_sig';
 import { checkIpPayloadSchema } from '../typeValidation/validation';
-const express = require('express');
+import config from '../config/config';
 const geoip = require('geoip-lite');
 
 export async function fetchMoonpayAvailability(userIp: string) {
     // Fetch data from endpoint 2
     try {
         const response = await axios.get(
-            `https://api.moonpay.com/v4/ip_address?apiKey=ppk_live_Ch5fat39X8NvMZwih2k7hK4sDrKanSPz&ipAddress=${userIp}`,
+            `https://api.moonpay.com/v4/ip_address?apiKey=${config.moonpayLiveKey}&ipAddress=${userIp}`,
             {
               headers: {
                 Accept: 'application/json',
