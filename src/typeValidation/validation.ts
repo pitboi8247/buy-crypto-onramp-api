@@ -68,6 +68,7 @@ export const zQueryMoonPay = zObject({
   redirectUrl: zString(),
   theme: zString(),
   walletAddresses: zString(),
+  showOnlyCurrencies: zString().array(),
   baseCurrencyCode: zString(),
   baseCurrencyAmount: zString(),
 });
