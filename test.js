@@ -95,12 +95,13 @@ const getMoonPaySig = async () => {
     walletAddress: '0x13E7f71a3E8847399547CE127B8dE420B282E4E4'
   }
   try {
-    const res = await axios.post('http://localhost:8081/generate-moonpay-sig', p
+	
+    const res = await axios.post('http://localhost:3000/api/moonpay-url-sign', p
      );
     const result = res.data;
     console.log(result);
   } catch (error) {
-    console.error('Error fetching data:', error.data);
+    console.error('Error fetching data:', error);
   }
 };
 
