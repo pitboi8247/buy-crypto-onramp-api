@@ -65,20 +65,17 @@ export const generateMercuryoSig = async (req: Request, res: Response, next: Nex
 
 export const generateMoonPaySig = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const queryString = qs.stringify(req.body);
-    const queryParsed = qs.parse(queryString);
-    const parsed = zQueryMoonPay.safeParse(queryParsed);
+    // const queryString = qs.stringify(req.body);
+    // const queryParsed = qs.parse(queryString);
+    // const parsed = zQueryMoonPay.safeParse(queryParsed);
 
-    const { showCurrencies } = req.body
-    console.log(showCurrencies)
-    if (parsed.success === false) {
-      console.log('failing')
-      return next(new ErrorResponse('invalid qequest body', 0));
-    }
-    const { walletAddresses } = parsed.data;
-    const encodedWalletAddresses = walletAddresses.replace(/[{:},"]/g, (m: string) => chars[m]);
+    // if (parsed.success === false) {
+    //   console.log('failing')
+    //   return next(new ErrorResponse('invalid qequest body', 0));
+    // }
 
-    const moonPayTradeUrl = populateMoonPayUrl({ ...parsed.data, encodedWalletAddresses });
+    console.log(req.body)
+    const moonPayTradeUrl = populateMoonPayUrl({ ...req.body });
     const originalUrl = `${MOONPAY_URL}${moonPayTradeUrl}`;
 
     const signature = crypto

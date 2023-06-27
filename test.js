@@ -90,17 +90,9 @@ const getMoonPaySig = async () => {
     baseCurrencyAmount: '30',
     redirectUrl: 'https://pancakeswap.finance',
     theme: 'light',
-    showOnlyCurrencies: ['eth', 'dai', 'usdc'],
+    showOnlyCurrencies: ['eth','dai','usdc','bnb','busd'],
 
-    walletAddresses: JSON.stringify(
-      MOONPAY_SUPPORTED_CURRENCY_CODES.reduce(
-        (acc, currencyCode) => ({
-          ...acc,
-          [currencyCode]: '0x13E7f71a3E8847399547CE127B8dE420B282E4E4',
-        }),
-        {},
-      ),
-    ),
+    walletAddress: '0x13E7f71a3E8847399547CE127B8dE420B282E4E4'
   }
   try {
     const res = await axios.post('http://localhost:8081/generate-moonpay-sig', p

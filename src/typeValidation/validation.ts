@@ -64,13 +64,13 @@ export const payloadSchema = zObject({
 
 export const zQueryMoonPay = zObject({
   type: zString(),
+  amount: zString(),
+  baseCurrencyCode: zString(),
   defaultCurrencyCode: zString(),
   redirectUrl: zString(),
   theme: zString(),
-  walletAddresses: zString(),
+  walletAddress: zString(),
   showOnlyCurrencies: zString().array(),
-  baseCurrencyCode: zString(),
-  baseCurrencyAmount: zString(),
 });
 
 export const BinanceConnectPOST = zObject({
