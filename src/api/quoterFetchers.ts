@@ -6,33 +6,12 @@ import config from '../config/config';
 const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
 const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
 
-
-export async function fetchMoonpayQuote(baseAmount: number, currencyCode: string, outputCurrency: string) {
-    // Fetch data from endpoint 2
-    try {
-        const response = await axios.get(
-            `${MOONPAY_EBDPOINT}${outputCurrency.toLowerCase()}/buy_quote/?apiKey=${config.moonpayLiveKey}&baseCurrencyAmount=${baseAmount}&&baseCurrencyCode=${currencyCode.toLowerCase()}`,
-            {
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-              },
-            },
-          );
-      const result = response.data;
-      return { code: 'MOONPAY', result: result, error: false };
-    } catch (error) {
-      return { code: 'MOONPAY', result: error, error: true };
-    }
-  }
-
-export async function fetchMercuryoQuote(fiatCurrency: string, cryptoCurrency: string, amount: string) {
-  // Fetch data from endpoint 2
+export async function fetchMoonpayQuote(fiatAmount: number, cryptoCurrency: string, fiatCurrency: string) {
   try {
     const response = await axios.get(
-      `${MERCURYO_ENDPOINT}?from=${fiatCurrency.toUpperCase()}&to=${cryptoCurrency.toUpperCase()}&amount=${
-        amount
-      }&widget_id=308e14df-01d7-4f35-948c-e17fa64bbc0d`,
+      `${MOONPAY_EBDPOINT}${cryptoCurrency.toLowerCase()}/buy_quote/?apiKey=${
+        config.moonpayLiveKey
+      }&baseCurrencyAmount=${fiatAmount}&&baseCurrencyCode=${fiatCurrency.toLowerCase()}`,
       {
         headers: {
           Accept: 'application/json',
@@ -41,29 +20,51 @@ export async function fetchMercuryoQuote(fiatCurrency: string, cryptoCurrency: s
       },
     );
     const result = response.data;
-    return { code: 'MERCURYO', result: result, error: false };
+    return { code: 'MoonPay', result: result, error: false };
   } catch (error) {
-    return { code: 'MERCURYO', result: error, error: true };
+    return { code: 'MoonPay', result: error.response.data, error: true };
+  }
+}
+
+export async function fetchMercuryoQuote(
+  fiatCurrency: string,
+  cryptoCurrency: string,
+  amount: string,
+  network: string,
+) {
+  try {
+    const response = await axios.get(
+      `${MERCURYO_ENDPOINT}?from=${fiatCurrency.toUpperCase()}&to=${cryptoCurrency.toUpperCase()}&amount=${amount}&network=${network}&widget_id=308e14df-01d7-4f35-948c-e17fa64bbc0d`,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const result = response.data.data;
+    return { code: 'Mercuryo', result: result, error: false };
+  } catch (error) {
+    return { code: 'Mercuryo', result: error.response.data, error: true };
   }
 }
 
 // for bsc connect we need to axios.get our own custom api endpoint as even get requests require
 // sig validation
 export async function fetchBinanceConnectQuote(payloada: any) {
-    const payload = {
-        fiatCurrency: 'USD',
-          cryptoCurrency: 'BUSD',
-          fiatAmount: '100',
-          cryptoNetwork: 'BSC',
-          paymentMethod: 'CARD',
+  const payload = {
+    fiatCurrency: 'USD',
+    cryptoCurrency: 'BUSD',
+    fiatAmount: '100',
+    cryptoNetwork: 'BSC',
+    paymentMethod: 'CARD',
+  };
+  // const validPayload = bscQuotepayloadSchema.safeParse(payload);
+  // if (!validPayload.success) {
+  //   throw new Error('payload has the incorrect shape. please check you types');
+  // }
 
-    }
-    // const validPayload = bscQuotepayloadSchema.safeParse(payload);
-    // if (!validPayload.success) {
-    //   throw new Error('payload has the incorrect shape. please check you types');
-    // }
-
-    try {
+  try {
     const merchantCode = 'pancake_swap_test';
     const timestamp = Date.now().toString();
 
@@ -81,12 +82,11 @@ export async function fetchBinanceConnectQuote(payloada: any) {
         timestamp,
         'x-api-signature': signature,
       },
-    })
-    const result = response
+    });
+    const result = response;
 
-  return { code: 'BINANCE_CONNECT', result: result, error: false };
-}
-  catch (error) {
+    return { code: 'BINANCE_CONNECT', result: result, error: false };
+  } catch (error) {
     return { code: 'BINANCE_CONNECT', result: error, error: true };
   }
 }

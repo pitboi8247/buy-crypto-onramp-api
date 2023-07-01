@@ -6,29 +6,10 @@ import config from '../config/config';
 const geoip = require('geoip-lite');
 
 export async function fetchMoonpayAvailability(userIp: string) {
-    // Fetch data from endpoint 2
-    try {
-        const response = await axios.get(
-            `https://api.moonpay.com/v4/ip_address?apiKey=${config.moonpayLiveKey}&ipAddress=${userIp}`,
-            {
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-              },
-            },
-          );
-      const result = response.data;
-      return { code: 'MOONPAY', result: result, error: false };
-    } catch (error) {
-      return { code: 'MOONPAY', result: error, error: true };
-    }
-  }
-
-export async function fetchMercuryoAvailability(userIp: string) {
   // Fetch data from endpoint 2
   try {
     const response = await axios.get(
-        `https://api.mercuryo.io/v1.6/public/data-by-ip?ip=${userIp}`,
+      `https://api.moonpay.com/v4/ip_address?apiKey=${config.moonpayLiveKey}&ipAddress=${userIp}`,
       {
         headers: {
           Accept: 'application/json',
@@ -37,20 +18,36 @@ export async function fetchMercuryoAvailability(userIp: string) {
       },
     );
     const result = response.data;
-    return { status: 'MERCURYO', result: result, error: false };
+    return { code: 'MoonPay', result: result, error: false };
   } catch (error) {
-    return { code: 'MERCURYO', result: error, error: true };
+    return { code: 'MoonPay', result: error.response.data, error: true };
+  }
+}
+
+export async function fetchMercuryoAvailability(userIp: string) {
+  // Fetch data from endpoint 2
+  try {
+    const response = await axios.get(`https://api.mercuryo.io/v1.6/public/data-by-ip?ip=${userIp}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = response.data.data;
+    return { code: 'Mercuryo', result: result, error: false };
+  } catch (error) {
+    return { code: 'Mercuryo', result: error.response.data, error: true };
   }
 }
 
 // for bsc connect we need to axios.get our own custom api endpoint as even get requests require
 // sig validation
 export async function fetchBinanceConnectAvailability(userIp: any) {
-    const validPayload = checkIpPayloadSchema.safeParse(userIp);
-    if (!validPayload.success) {
-      throw new Error('payload has the incorrect shape. please check you types');
-    }
-    try {
+  const validPayload = checkIpPayloadSchema.safeParse(userIp);
+  if (!validPayload.success) {
+    throw new Error('payload has the incorrect shape. please check you types');
+  }
+  try {
     const merchantCode = 'pancake_swap_test';
     const timestamp = Date.now().toString();
 
@@ -61,29 +58,33 @@ export async function fetchBinanceConnectAvailability(userIp: any) {
     const endpoint = `https://sandbox.bifinitypay.com/bapi/fiat/v1/public/open-api/connect/check-ip-address`;
 
     // NEED TO LOK UP API DOCS FOR RET TYPE WILL DO LATER
-    const response = await post<any, any>(endpoint, {userIp}, {
-      headers: {
-        'Content-Type': 'application/json',
-        merchantCode,
-        timestamp,
-        'x-api-signature': signature,
+    const response = await post<any, any>(
+      endpoint,
+      { userIp },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          merchantCode,
+          timestamp,
+          'x-api-signature': signature,
+        },
       },
-    })
-    const result = response
+    );
+    const result = response;
 
-  return { status: 'BINANCE_CONNECT', result: result, error: false };
-}
-  catch (error) {
+    return { status: 'BINANCE_CONNECT', result: result, error: false };
+  } catch (error) {
     return { code: 'BINANCE_CONNECT', result: error, error: true };
   }
 }
-export const fetchIpDetails = async(req, res) => {
-  const ipAddress = 
-  req.headers['cf-connecting-ip'] ||
-  req.headers['x-real-ip'] ||
-  req.headers['x-forwarded-for'] ||
-  req.socket.remoteAddress || ''
-  
+export const fetchIpDetails = async (req, res) => {
+  const ipAddress =
+    req.headers['cf-connecting-ip'] ||
+    req.headers['x-real-ip'] ||
+    req.headers['x-forwarded-for'] ||
+    req.socket.remoteAddress ||
+    '';
+
   const geo = geoip.lookup(ipAddress);
 
   const country = geo ? geo.country : null;
@@ -92,10 +93,8 @@ export const fetchIpDetails = async(req, res) => {
   const response = {
     ipAddress,
     country,
-    state
+    state,
   };
 
   res.json(response);
-}
-
-
+};
