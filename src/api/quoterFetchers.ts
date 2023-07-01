@@ -34,7 +34,7 @@ export async function fetchMercuryoQuote(
 ) {
   try {
     const response = await axios.get(
-      `${MERCURYO_ENDPOINT}?from=${fiatCurrency.toUpperCase()}&to=${cryptoCurrency.toUpperCase()}&amount=${amount}&network=${network}&widget_id=308e14df-01d7-4f35-948c-e17fa64bbc0d`,
+      `${MERCURYO_ENDPOINT}?from=${fiatCurrency.toUpperCase()}&to=${cryptoCurrency.toUpperCase()}&amount=${amount}&network=${network}&widget_id=a9f3d282-db2d-4364-ae62-602c5000f003`,
       {
         headers: {
           Accept: 'application/json',
