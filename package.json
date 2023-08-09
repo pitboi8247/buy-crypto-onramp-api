@@ -44,6 +44,7 @@
     "express": "^5.0.0-alpha.8",
     "express-http-context": "^1.2.4",
     "geoip-lite": "^1.4.7",
+    "node-notifier": "^10.0.1",
     "qs": "^6.11.2",
     "runtime-node-refresh": "^1.0.7",
     "ts-jest": "^29.1.0",

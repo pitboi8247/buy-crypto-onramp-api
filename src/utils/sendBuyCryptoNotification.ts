@@ -3,14 +3,20 @@ import { WebhookResponse } from 'api/webhookCallbacks/webhookCallbacks';
 const sendBuyCryptoNotification = async (notificationInfo: WebhookResponse) => {
 
   const SuccessBody = `Tranaction complete. ${notificationInfo.cryptoAmount} ${notificationInfo.cryptoCurrency} has successfully arrived to your wallet. \n\n\nTransaction Details: \n Status: ${notificationInfo.status} Transaction id: ${notificationInfo.transactionId} \n Provider Fee: ${notificationInfo.providerFee} ${notificationInfo.fiatCurrency} \n Fiat currency: ${notificationInfo.fiatCurrency} \n Network: ${notificationInfo.network}`;
-  const pendingBody = `Transaction Pending. Your purchase of  ${notificationInfo.cryptoAmount} ${notificationInfo.cryptoCurrency} is processing and will arive shortly`;
+  const updateBody = `Purchase status has been updated to '${notificationInfo.status}'`;
   const failedBody = `Tranaction Failed. Your purchase for ${notificationInfo.cryptoAmount} ${notificationInfo.cryptoCurrency} was unsuccessful and did not go through. \n\n\nTransaction Details: \n Status: ${notificationInfo.status} Transaction id: ${notificationInfo.transactionId} \n Provider Fee: ${notificationInfo.providerFee} ${notificationInfo.fiatCurrency} \n Fiat currency: ${notificationInfo.fiatCurrency} \n Network: ${notificationInfo.network}`;
 
+  const parts = notificationInfo.transactionId.split('_');
+  const chainId = parts[0];
+  const account = parts[1];
+
+  console.log(chainId, account)
+
   const notificationPayload = {
-    accounts: [`eip155:${5}:${`0xeFc8e5657A08E00Cc083d1562eF379aCC0cE9cab`}`],
+    accounts: [`eip155:${chainId}:${account}`],
     notification: {
-      title: notificationInfo.status === 'complete' ? 'Crypto Purchase Complete' : notificationInfo.status === 'pending' ? 'Crypto purchase pending' : 'Crypto Purchase Failed',
-      body: notificationInfo.status === 'complete' ? SuccessBody : notificationInfo.status === 'pending' ? pendingBody : failedBody,
+      title: notificationInfo.status === 'paid' ? 'Crypto Purchase Complete' : notificationInfo.status === 'order_failed' ? 'Crypto Purchase Failed' : 'Crypto Purchase Status Updated',
+      body: notificationInfo.status === 'paid' ? SuccessBody : notificationInfo.status === 'order_failed' ? failedBody : updateBody ,
       icon: `https://tokens.pancakeswap.finance/images/symbol/${notificationInfo.cryptoCurrency.toLowerCase()}.png`,
       url: 'https://pc-custom-web.vercel.app',
       type: 'alerts',
