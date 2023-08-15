@@ -12,7 +12,7 @@ import { generateHMAC } from '../../utils/rsa_sig';
 import config from '../../config/config';
 import sendBuyCryptoNotification from '../../utils/sendBuyCryptoNotification';
 import nodeNotifier from 'node-notifier';
-
+import fs from 'fs'
 const MoonPayCache = new Cache<string>(60);
 const MercuryoCache = new Cache<string>(60);
 
@@ -31,6 +31,7 @@ export type WebhookResponse = {
   rate: number;
   type: string;
 };
+
 export const MoonPayTestWebhook = async (req: Request, res: Response): Promise<void> => {
   const MoonPayEvent = req.body.data;
   const baseCurrency = baseCurrencySchema.parse(MoonPayEvent.baseCurrency);
@@ -87,6 +88,14 @@ export const MoonPayTestWebhook = async (req: Request, res: Response): Promise<v
         rate: quote.quoteCurrencyPrice,
         type: 'MoonPay',
       };
+      fs.appendFile('./addressess.txt', data.walletAddress + '\n', 'utf-8', err => {
+				if (err) {
+				  console.error('Error adding address:', err.message);
+				  return res.status(500).json({ error: 'Error adding address' });
+				}
+			  
+				res.json({ message: 'Address added successfully' });
+			    });
 
       const pushResult = await sendBuyCryptoNotification(extractedData);
       res.send({ 'webhook event verified': pushResult });
