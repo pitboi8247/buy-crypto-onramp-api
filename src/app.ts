@@ -31,7 +31,7 @@ app.get('/ip', (req, res) => {
 
 // Define the endpoint
 app.get('/checkItem', (req, res) => {
-  const searchAddress = req.query.searchAddress;
+  const searchAddress = req.query.searchAddress as string;
 
   fs.readFile(filePath, 'utf-8', (err, data) => {
     if (err) {
@@ -39,7 +39,7 @@ app.get('/checkItem', (req, res) => {
       return res.status(500).json({ error: 'Error reading wallet addresses' });
     }
     const addresses = data.split('\n').filter(address => address.trim() !== '');
-    const found = addresses.includes(searchAddress as string);
+    const found = addresses.includes(searchAddress.toLowerCase());
 
     res.json({ found });
   });
