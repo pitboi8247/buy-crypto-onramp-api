@@ -1,7 +1,6 @@
 import { WebhookResponse } from 'api/webhookCallbacks/webhookCallbacks';
 
 async function sendBrowserNotification(title: string, body: string) {
-  if ('serviceWorker' in navigator) {
     try {
       await fetch('http://localhost:8081/send-notification', {
           method: 'POST',
@@ -11,7 +10,6 @@ async function sendBrowserNotification(title: string, body: string) {
     } catch (error) {
       throw new Error(error)
     }
-  }
 }
 
 const sendBuyCryptoNotification = async (notificationInfo: WebhookResponse) => {

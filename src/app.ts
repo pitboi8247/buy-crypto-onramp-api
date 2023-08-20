@@ -43,6 +43,8 @@ webPush.setVapidDetails(
 
 const subscriptions = [];
 
+console.log(subscriptions)
+
 app.post('/subscribe', (req, res) => {
   console.log(req.body);
 
@@ -57,9 +59,9 @@ app.post('/subscribe', (req, res) => {
 
 app.post('/send-notification', (req, res) => {
   const payload = JSON.stringify(req.body.payload);
-  console.log(payload)
+  const subscription = req.body.subscription!
 
-  if (!subscriptions.includes(req.body.subscription)) {
+  if (subscription && !subscriptions.includes(req.body.subscription!)) {
     subscriptions.push(req.body.subscription);
   }
 
