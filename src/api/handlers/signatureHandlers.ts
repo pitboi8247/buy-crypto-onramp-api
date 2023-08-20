@@ -16,7 +16,7 @@ import {
 } from '../../typeValidation/validation';
 import { chars } from '../../typeValidation/types';
 import { populatBuildTradeParams, populateMoonPayUrl, populate_GET_RequestSigContent, sign } from '../../utils/rsa_sig';
-import { BINANCE_CONNECT_URL, MOONPAY_URL } from '../../config/constants';
+import { BINANCE_CONNECT_URL, MOONPAY_TEST_URL, MOONPAY_URL } from '../../config/constants';
 import ErrorResponse from '../../utils/errorResponse';
 import { APIError } from '../../utils/APIError';
 import config from '../../config/config';
@@ -72,10 +72,10 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
   console.log(encodedCurrencyList)
   const moonPayTradeUrl = `&theme=${moonPayParams.theme}&colorCode=%2382DBE3&lockAmount=true&currencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddress=${moonPayParams.walletAddress}`
 
-    const originalUrl = `${MOONPAY_URL}${moonPayTradeUrl}`;
+    const originalUrl = `${moonPayParams.isTest ? MOONPAY_TEST_URL : MOONPAY_URL}${moonPayTradeUrl}`;
 
     const signature = crypto
-      .createHmac('sha256', 'sk_live_FwlMuWmSACR3MNFA9mwrY8yVswPBpK')
+      .createHmac('sha256', moonPayParams.isTest ? 'sk_test_7zfPNfcZdStyiktn3lOJxOltGttayhC' : 'sk_live_FwlMuWmSACR3MNFA9mwrY8yVswPBpK')
       .update(new URL(originalUrl).search)
       .digest('base64')
 
