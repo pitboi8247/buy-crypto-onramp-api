@@ -10,6 +10,9 @@ const envsSchema = z.object({
   PRIVATE_KEY: z.string({ required_error: "Private key required for binance connect url signing"}).nonempty(),
   MOONPAY_WEBHOOK_KEY: z.string({ required_error: "Mercuryo secret key required for url signing"}).nonempty(),
   MERCURYO_SIGN_KEY: z.string({ required_error: "Mercuryo secret key required for url signing"}).nonempty(),
+  WEB_PUSH_PRIVATE_KEY: z.string({ required_error: "WEB_PUSH_PRIVATE_KEY required for url signing"}).nonempty(),
+  WEB_PUSH_PUBLIC_KEY: z.string({ required_error: "WEB_PUSH_PUBLIC_KEY required for url signing"}).nonempty(),
+
 }).nonstrict();
 
 const envVars = {
@@ -21,7 +24,8 @@ const envVars = {
   PRIVATE_KEY: process.env.PRIVATE_KEY,
   MOONPAY_WEBHOOK_KEY: process.env.MOONPAY_WEBHOOK_KEY,
   MERCURYO_SIGN_KEY:  process.env.MERCURYO_SIGN_KEY,
-
+  WEB_PUSH_PRIVATE_KEY: process.env.WEB_PUSH_PRIVATE_KEY,
+  WEB_PUSH_PUBLIC_KEY: process.env.WEB_PUSH_PUBLIC_KEY
 };
 
 try {
@@ -41,5 +45,7 @@ export default {
   moonpayLiveKey: envVars.MOONPAY_LIVE_KEY,
   privateKey: envVars.PRIVATE_KEY,
   moonpayWebhookKey: envVars.MOONPAY_WEBHOOK_KEY,
-  mercuryoSignKey: envVars.MERCURYO_SIGN_KEY
+  mercuryoSignKey: envVars.MERCURYO_SIGN_KEY,
+  webPushPrivateKey: envVars.WEB_PUSH_PRIVATE_KEY,
+  webPushPublicKey: envVars.WEB_PUSH_PUBLIC_KEY
 };

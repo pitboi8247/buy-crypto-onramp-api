@@ -16,7 +16,7 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
   const { fiatCurrency, cryptoCurrency, fiatAmount, network } = req.body;
 
   const responsePromises = [
-    fetchMoonpayQuote(fiatAmount, cryptoCurrency, fiatCurrency),
+    fetchMoonpayQuote(fiatAmount, cryptoCurrency, fiatCurrency, network),
     fetchMercuryoQuote(fiatCurrency, cryptoCurrency, fiatAmount, network),
   ];
   const responses = await Promise.allSettled(responsePromises);
@@ -34,7 +34,9 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
   const providerqUOTES = dataPromises.map((item) => {
     if (item.code === 'MoonPay' && !item.error) {
       const { baseCurrencyAmount, networkFeeAmount, quoteCurrencyPrice } = item.result;
-      const currencyAmtMinusFees = baseCurrencyAmount - (item.result.networkFeeAmount + item.result.feeAmount + item.result.extraFeeAmount);
+      let totalFees = baseCurrencyAmount * (PANCAKE_FEE + MOONPAY_FEE) + networkFeeAmount
+      if (totalFees > 5) totalFees = 4
+      const currencyAmtMinusFees = baseCurrencyAmount - totalFees
       const receivedEthAmount = convertQuoteToBase(currencyAmtMinusFees, quoteCurrencyPrice);
 
       return {
@@ -45,7 +47,8 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
         fiatCurrency: fiatCurrency.toUpperCase(),
         cryptoCurrency: cryptoCurrency.toUpperCase(),
         provider: item.code,
-        price: item.result.quoteCurrencyPrice
+        price: item.result.quoteCurrencyPrice,
+        noFee: convertQuoteToBase(baseCurrencyAmount, quoteCurrencyPrice)
       };
     }
     if (item.code === 'Mercuryo' && !item.error) {
@@ -63,7 +66,8 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
         fiatCurrency: fiatCurrency.toUpperCase(),
         cryptoCurrency: cryptoCurrency.toUpperCase(),
         provider: item.code,
-        price: item.result.rate
+        price: item.result.rate,
+        noFee: 0
       
       };
     }
@@ -75,7 +79,8 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
       fiatCurrency: fiatCurrency.toUpperCase(),
       cryptoCurrency: cryptoCurrency.toUpperCase(),
       provider: item.code,
-      price: 0
+      price: 0,
+      noFee: 0
     };
   });
 

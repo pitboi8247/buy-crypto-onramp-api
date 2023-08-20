@@ -6,10 +6,16 @@ import config from '../config/config';
 const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
 const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
 
-export async function fetchMoonpayQuote(fiatAmount: number, cryptoCurrency: string, fiatCurrency: string) {
+const networkToChainMap = {
+  ETHEREUM: '',
+  BINANCESMARTCHAIN: '_bsc',
+  ARBITRUM: '_arbitrum'
+}
+export async function fetchMoonpayQuote(fiatAmount: number, cryptoCurrency: string, fiatCurrency: string, network: string) {
   try {
+    const baseCurrency = `${cryptoCurrency.toLowerCase()}${networkToChainMap[network]}`
     const response = await axios.get(
-      `${MOONPAY_EBDPOINT}${cryptoCurrency.toLowerCase()}/buy_quote/?apiKey=${
+      `${MOONPAY_EBDPOINT}${baseCurrency}/buy_quote/?apiKey=${
         config.moonpayLiveKey
       }&baseCurrencyAmount=${fiatAmount}&&baseCurrencyCode=${fiatCurrency.toLowerCase()}`,
       {

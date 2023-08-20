@@ -1,5 +1,19 @@
 import { WebhookResponse } from 'api/webhookCallbacks/webhookCallbacks';
 
+async function sendBrowserNotification(title: string, body: string) {
+  if ('serviceWorker' in navigator) {
+    try {
+      await fetch('http://localhost:8081/send-notification', {
+          method: 'POST',
+          body: JSON.stringify({ payload: { title, body }, subscription: '' }),
+          headers: { 'Content-Type': 'application/json' },
+        })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+}
+
 const sendBuyCryptoNotification = async (notificationInfo: WebhookResponse) => {
 
   const SuccessBody = `Tranaction complete. ${notificationInfo.cryptoAmount} ${notificationInfo.cryptoCurrency} has successfully arrived to your wallet. \n\n\nTransaction Details: \n Status: ${notificationInfo.status} Transaction id: ${notificationInfo.transactionId} \n Provider Fee: ${notificationInfo.providerFee} ${notificationInfo.fiatCurrency} \n Fiat currency: ${notificationInfo.fiatCurrency} \n Network: ${notificationInfo.network}`;
@@ -37,7 +51,7 @@ const sendBuyCryptoNotification = async (notificationInfo: WebhookResponse) => {
   // console.log(walletConnectPushResponse)
 
   const result = await walletConnectPushResponse.json();
-  console.log(result)
+  await sendBrowserNotification('PancakeSwap Alert', 'You have recieved a notification from pncakeswap.')
 
   return result;
 };
