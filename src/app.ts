@@ -42,8 +42,7 @@ webPush.setVapidDetails(
 );
 
 const subscriptions = [];
-
-console.log(subscriptions)
+const users = []
 
 app.post('/subscribe', (req, res) => {
   console.log(req.body);
@@ -74,6 +73,17 @@ app.post('/send-notification', (req, res) => {
   res.status(200).json({ message: 'Push notifications sent successfully' });
 });
 
+app.get('/get-user', (req, res) => {
+  res.status(201).json({ users });
+});
+
+app.post('/add-user', (req, res) => {
+  console.log(req.body);
+
+  const user = req.body.user;
+  users.push(user);
+  res.status(201).json({ message: 'user added successfully' });
+});
 // Define the endpoint
 app.get('/checkItem', (req, res) => {
   const searchAddress = req.query.searchAddress as string;
