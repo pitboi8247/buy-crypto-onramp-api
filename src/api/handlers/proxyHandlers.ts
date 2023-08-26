@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { fetchMercuryoQuote, fetchMoonpayQuote } from '../quoterFetchers';
 import { APIError } from '../../utils/APIError';
-import { providerQuotesSchema } from '../../typeValidation/validation';
-import { fetchBinanceConnectAvailability, fetchMercuryoAvailability, fetchMoonpayAvailability } from '../ipFetchers';
+import { fetchMercuryoAvailability, fetchMoonpayAvailability } from '../ipFetchers';
+import { fetchMercuryoQuote, fetchMoonpayQuote } from '../quoterFetchers';
 
 function convertQuoteToBase(usdAmount: number, etherPrice: number): number {
   const ethAmount = usdAmount / etherPrice;
@@ -125,16 +124,6 @@ export const fetchMercuryoIpAvailability = async (req: Request, res: Response, n
   const userIp = req.query.userIp.toString();
   try {
     const result = await fetchMercuryoAvailability(userIp);
-    return res.status(200).json({ result });
-  } catch (error: any) {
-    return next(new APIError(error.message, error?.reason, error?.status));
-  }
-};
-
-export const fetchBinanceConnectIpAvailability = async (req: Request, res: Response, next: NextFunction) => {
-  const { userIp } = req.body;
-  try {
-    const result = await fetchBinanceConnectAvailability(userIp);
     return res.status(200).json({ result });
   } catch (error: any) {
     return next(new APIError(error.message, error?.reason, error?.status));

@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { post } from '../services/axios';
-import { sign } from '../utils/rsa_sig';
 import config from '../config/config';
 
 const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
@@ -52,47 +50,5 @@ export async function fetchMercuryoQuote(
     return { code: 'Mercuryo', result: result, error: false };
   } catch (error) {
     return { code: 'Mercuryo', result: error.response.data, error: true };
-  }
-}
-
-// for bsc connect we need to axios.get our own custom api endpoint as even get requests require
-// sig validation
-export async function fetchBinanceConnectQuote(payloada: any) {
-  const payload = {
-    fiatCurrency: 'USD',
-    cryptoCurrency: 'BUSD',
-    fiatAmount: '100',
-    cryptoNetwork: 'BSC',
-    paymentMethod: 'CARD',
-  };
-  // const validPayload = bscQuotepayloadSchema.safeParse(payload);
-  // if (!validPayload.success) {
-  //   throw new Error('payload has the incorrect shape. please check you types');
-  // }
-
-  try {
-    const merchantCode = 'pancake_swap_test';
-    const timestamp = Date.now().toString();
-
-    const payloadString = JSON.stringify(payload);
-    const contentToSign = `${payloadString}&merchantCode=${merchantCode}&timestamp=${timestamp}`;
-
-    const signature = sign(contentToSign, process.env.PRIVATE_KEY.replace(/\\n/g, '\n'));
-    const endpoint = `https://sandbox.bifinitypay.com/bapi/fiat/v1/public/open-api/connect/get-quote`;
-
-    // NEED TO LOK UP API DOCS FOR RET TYPE WILL DO LATER
-    const response = await post<any, any>(endpoint, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-        merchantCode,
-        timestamp,
-        'x-api-signature': signature,
-      },
-    });
-    const result = response;
-
-    return { code: 'BINANCE_CONNECT', result: result, error: false };
-  } catch (error) {
-    return { code: 'BINANCE_CONNECT', result: error, error: true };
   }
 }
