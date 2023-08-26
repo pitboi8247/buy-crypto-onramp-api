@@ -1,18 +1,11 @@
 import { Request, Response } from 'express';
-import { Cache } from '../../cache';
-import { checkCacheForDuplicateRequests } from '../../utils/checkCache';
-import {
-  baseCurrencySchema,
-  currencySchema,
-  dataSchema,
-  getValidQuoteSchema,
-  myDataSchema,
-} from '../../typeValidation/webhookValidation';
-import { generateHMAC } from '../../utils/rsa_sig';
-import config from '../../config/config';
-import sendBuyCryptoNotification from '../../utils/sendBuyCryptoNotification';
 import fs from 'fs';
 import path from 'path';
+import { Cache } from '../../cache';
+import config from '../../config/config';
+import { checkCacheForDuplicateRequests } from '../../utils/checkCache';
+import { generateHMAC } from '../../utils/rsa_sig';
+import sendBuyCryptoNotification from '../../utils/sendBuyCryptoNotification';
 
 const MoonPayCache = new Cache<string>(60);
 const MercuryoCache = new Cache<string>(60);
@@ -56,10 +49,10 @@ export const MercuryoTestWebhook = async (req: Request, res: Response): Promise<
   const { status, merchant_transaction_id } = mercuryoEvent;
 
   const isDuplicateRequest = checkCacheForDuplicateRequests(status, merchant_transaction_id, MercuryoCache);
-  // if (isDuplicateRequest) {
-  // 	res.status(200).send({ message: "Duplicate event. Already processed." });
-  // 	return;
-  // }
+  if (isDuplicateRequest) {
+  	res.status(200).send({ message: "Duplicate event. Already processed." });
+  	return;
+  }
   const mercuryoSignature = req.headers['x-signature'] as string;
   if (mercuryoSignature) {
     const expectedSignature = generateHMAC(config.mercuryoSignKey, JSON.stringify(req.body));
