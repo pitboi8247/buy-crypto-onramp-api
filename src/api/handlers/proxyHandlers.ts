@@ -8,7 +8,7 @@ function convertQuoteToBase(usdAmount: number, etherPrice: number): number {
   return ethAmount;
 }
 
-const MOONPAY_FEE = 0.0315
+const MOONPAY_FEE = 0.02
 const PANCAKE_FEE = 0.01
 // to-do
 export const fetchProviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
@@ -32,14 +32,14 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
 
   const providerqUOTES = dataPromises.map((item) => {
     if (item.code === 'MoonPay' && !item.error) {
-      const { baseCurrencyAmount, networkFeeAmount, quoteCurrencyPrice } = item.result;
-      let totalFees = baseCurrencyAmount * (PANCAKE_FEE + MOONPAY_FEE) + networkFeeAmount
-      if (totalFees > 5) totalFees = 4
+      const { baseCurrencyAmount, networkFeeAmount, quoteCurrencyPrice, feeAmount, extraFeeAmount } = item.result;
+      const providerFee = feeAmount + extraFeeAmount
+      let totalFees = networkFeeAmount + providerFee
       const currencyAmtMinusFees = baseCurrencyAmount - totalFees
       const receivedEthAmount = convertQuoteToBase(currencyAmtMinusFees, quoteCurrencyPrice);
 
       return {
-        providerFee: baseCurrencyAmount * (MOONPAY_FEE),
+        providerFee: providerFee,
         networkFee: networkFeeAmount,
         amount: baseCurrencyAmount,
         quote: receivedEthAmount,
@@ -53,8 +53,7 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
     if (item.code === 'Mercuryo' && !item.error) {
       const data = item.result;
       const totalFeeAmount = Number(data.fee[fiatCurrency.toUpperCase()]);
-      const pancakeFee = Number(data.fiat_amount * 0.01)
-      const currencyAmtMinusFees = Number(data.fiat_amount) - totalFeeAmount - pancakeFee;
+      const currencyAmtMinusFees = Number(data.fiat_amount) - totalFeeAmount;
       const receivedEthAmount = convertQuoteToBase(currencyAmtMinusFees, Number(data.rate));
 
       return {
