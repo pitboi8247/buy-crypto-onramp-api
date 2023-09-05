@@ -28,7 +28,6 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
     }, [])
     .filter((item) => typeof item !== 'undefined');
 
-    console.log(dataPromises[2].result)
 
   const providerqUOTES = dataPromises.map((item) => {
     if (item.code === 'MoonPay' && !item.error) {
@@ -97,7 +96,8 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
       cryptoCurrency: cryptoCurrency.toUpperCase(),
       provider: item.code,
       price: 0,
-      noFee: 0
+      noFee: 0,
+      error: item.code === 'Transak' ? item.result.error.message : item.result.message
     };
   });
 

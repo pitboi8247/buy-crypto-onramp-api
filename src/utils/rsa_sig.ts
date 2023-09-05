@@ -23,6 +23,5 @@ export const populatBuildTradeParams = (params) => {
 export const populateMoonPayUrl = (moonPayParams) => {
   const supportedTokens = moonPayParams.showOnlyCurrencies
   const encodedCurrencyList = encodeURIComponent(supportedTokens);
-  console.log(encodedCurrencyList)
   return `&theme=${moonPayParams.theme}&colorCode=%2382DBE3&defaultCurrencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddress=${moonPayParams.walletAddress}&showOnlyCurrencies=${encodedCurrencyList}`
 }

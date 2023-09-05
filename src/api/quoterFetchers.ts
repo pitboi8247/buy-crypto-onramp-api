@@ -10,7 +10,6 @@ const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
 export async function fetchMoonpayQuote(fiatAmount: number, cryptoCurrency: string, fiatCurrency: string, network: number) {
   try {
     const baseCurrency = `${cryptoCurrency.toLowerCase()}${chainIdToMoonPayNetworkId[network]}`
-    console.log(baseCurrency)
     const response = await axios.get(
       `${MOONPAY_EBDPOINT}${baseCurrency}/buy_quote/?apiKey=${
         config.moonpayLiveKey
@@ -53,7 +52,6 @@ export async function fetchMercuryoQuote(
 }
 
 export async function fetchTransakQuote(fiatAmount: number, cryptoCurrency: string, fiatCurrency: string, network: number) {
-  console.log(fiatCurrency, cryptoCurrency, network)
   try {
     const response = await axios.get(
       `${TRANSAK_ENDPOINT}/currencies/price?partnerApiKey=bf960e79-6d98-4fd0-823d-8409d290c346&fiatCurrency=${fiatCurrency.toUpperCase()}&cryptoCurrency=${cryptoCurrency.toUpperCase()}&network=${chainIdToTransakNetworkId[network]}&fiatAmount=${fiatAmount}&paymentMethod=credit_debit_card&isBuyOrSell=BUY`,
