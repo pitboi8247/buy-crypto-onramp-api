@@ -70,3 +70,14 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
     return next(new APIError(error.message, error?.reason, error?.status));
   }
 };
+
+export const generateTransakSig = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const transakParams = { ...req.body };
+    const transakUrl = `https://global-stg.transak.com?apiKey=bf960e79-6d98-4fd0-823d-8409d290c346&fiatCurrency=${transakParams.fiatCurrency}&cryptoCurrency=${transakParams.cryptoCurrency}&network=${transakParams.network}&fiatAmount=${transakParams.amount}&walletAddress=${transakParams.walletAddress}&themeColor=1DC7D3`;
+
+    res.json({ urlWithSignature: transakUrl });
+  } catch (error) {
+    return next(new APIError(error.message, error?.reason, error?.status));
+  }
+};

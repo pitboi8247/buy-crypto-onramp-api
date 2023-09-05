@@ -9,6 +9,7 @@ import {
 import {
   generateMercuryoSig,
   generateMoonPaySig,
+  generateTransakSig,
 } from './handlers/signatureHandlers';
 import { fetchIpDetails } from './ipFetchers';
 import { MercuryoTestWebhook, MoonPayTestWebhook } from './webhookCallbacks/webhookCallbacks';
@@ -18,6 +19,7 @@ const router: Router = express.Router();
 //router routes
 router.route('/generate-mercuryo-sig').post(generateMercuryoSig).get(generateMercuryoSig);
 router.route('/generate-moonpay-sig').post(generateMoonPaySig);
+router.route('/generate-transak-sig').post(generateTransakSig)
 
 router.route('/fetch-moonpay-availability').get(fetchMoonPayIpAvailability);
 router.route('/fetch-mercuryo-availability').get(fetchMercuryoIpAvailability);

@@ -10,6 +10,7 @@ const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
 export async function fetchMoonpayQuote(fiatAmount: number, cryptoCurrency: string, fiatCurrency: string, network: number) {
   try {
     const baseCurrency = `${cryptoCurrency.toLowerCase()}${chainIdToMoonPayNetworkId[network]}`
+    console.log(baseCurrency)
     const response = await axios.get(
       `${MOONPAY_EBDPOINT}${baseCurrency}/buy_quote/?apiKey=${
         config.moonpayLiveKey

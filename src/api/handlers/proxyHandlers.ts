@@ -28,7 +28,7 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
     }, [])
     .filter((item) => typeof item !== 'undefined');
 
-    console.log(dataPromises)
+    console.log(dataPromises[2].result)
 
   const providerqUOTES = dataPromises.map((item) => {
     if (item.code === 'MoonPay' && !item.error) {

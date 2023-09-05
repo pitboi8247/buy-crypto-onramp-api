@@ -17,6 +17,7 @@ export enum ChainId {
   ARBITRUM_GOERLI = 421613,
   LINEA = 59144,
   LINEA_TESTNET = 59140,
+  BASE = 8453,
 }
 
 export const chainIdToMercuryoNetworkId: { [id: number]: string } = {
@@ -26,6 +27,7 @@ export const chainIdToMercuryoNetworkId: { [id: number]: string } = {
   [ChainId.ZKSYNC]: 'ZKSYNC',
   [ChainId.POLYGON_ZKEVM]: 'ZKEVM',
   [ChainId.LINEA]: 'LINEA',
+  [ChainId.BASE]: 'LINEA',
 };
 
 export const chainIdToMoonPayNetworkId: { [id: number]: string } = {
@@ -35,6 +37,7 @@ export const chainIdToMoonPayNetworkId: { [id: number]: string } = {
   [ChainId.ZKSYNC]: '_zksync',
   [ChainId.POLYGON_ZKEVM]: '_polygonzkevm',
   [ChainId.LINEA]: '_linea',
+  [ChainId.BASE]: '_base',
 };
 
 export const chainIdToTransakNetworkId: { [id: number]: string } = {
@@ -44,4 +47,5 @@ export const chainIdToTransakNetworkId: { [id: number]: string } = {
   [ChainId.ZKSYNC]: 'zksync',
   [ChainId.POLYGON_ZKEVM]: 'polygonzkevm',
   [ChainId.LINEA]: 'linea',
+  [ChainId.BASE]: 'base',
 };
