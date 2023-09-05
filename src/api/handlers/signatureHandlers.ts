@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 
 import crypto from 'crypto';
+import qs from 'qs';
 import config from '../../config/config';
 import { MOONPAY_TEST_URL, MOONPAY_URL } from '../../config/constants';
-import { APIError } from '../../utils/APIError';
 import { ParsedMercuryGet, ParsedMercuryPOST, validateMercuryoSchema } from '../../typeValidation/validation';
-import qs from 'qs';
+import { APIError } from '../../utils/APIError';
 
 export const generateMercuryoSig = async (req: Request, res: Response, next: NextFunction) => {
   const queryString =
@@ -48,21 +48,17 @@ export const generateMercuryoSig = async (req: Request, res: Response, next: Nex
   }
 };
 
-
 export const generateMoonPaySig = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const moonPayParams = { ...req.body };
-    const supportedTokens = moonPayParams.showOnlyCurrencies;
-    const encodedCurrencyList = encodeURIComponent(supportedTokens);
-    console.log(encodedCurrencyList);
     const moonPayTradeUrl = `&theme=${moonPayParams.theme}&colorCode=%2382DBE3&lockAmount=true&currencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddress=${moonPayParams.walletAddress}`;
-
-    const originalUrl = `${moonPayParams.isTestEnv ? MOONPAY_TEST_URL : MOONPAY_URL}${moonPayTradeUrl}`;
+    const isTestEnviornment = moonPayParams.isTestEnv &&  moonPayParams.isTestEnv === 'development' 
+    const originalUrl = `${isTestEnviornment ? MOONPAY_TEST_URL : MOONPAY_URL}${moonPayTradeUrl}`;
 
     const signature = crypto
       .createHmac(
         'sha256',
-        moonPayParams.isTestEnv ? 'sk_test_7zfPNfcZdStyiktn3lOJxOltGttayhC' : 'sk_live_FwlMuWmSACR3MNFA9mwrY8yVswPBpK',
+        isTestEnviornment ? 'sk_test_7zfPNfcZdStyiktn3lOJxOltGttayhC' : 'sk_live_FwlMuWmSACR3MNFA9mwrY8yVswPBpK',
       )
       .update(new URL(originalUrl).search)
       .digest('base64');

@@ -1,22 +1,20 @@
 import { NextFunction, Request, Response } from 'express';
 import { APIError } from '../../utils/APIError';
 import { fetchMercuryoAvailability, fetchMoonpayAvailability } from '../ipFetchers';
-import { fetchMercuryoQuote, fetchMoonpayQuote } from '../quoterFetchers';
+import { fetchMercuryoQuote, fetchMoonpayQuote, fetchTransakQuote } from '../quoterFetchers';
 
 function convertQuoteToBase(usdAmount: number, etherPrice: number): number {
   const ethAmount = usdAmount / etherPrice;
   return ethAmount;
 }
 
-const MOONPAY_FEE = 0.02
-const PANCAKE_FEE = 0.01
-// to-do
 export const fetchProviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
   const { fiatCurrency, cryptoCurrency, fiatAmount, network } = req.body;
 
   const responsePromises = [
     fetchMoonpayQuote(fiatAmount, cryptoCurrency, fiatCurrency, network),
     fetchMercuryoQuote(fiatCurrency, cryptoCurrency, fiatAmount, network),
+    fetchTransakQuote(fiatAmount, cryptoCurrency, fiatCurrency, network)
   ];
   const responses = await Promise.allSettled(responsePromises);
 
@@ -69,6 +67,25 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
       
       };
     }
+    if (item.code === 'Transak' && !item.error) {
+      const data = item.result.response;
+      const totalFeeAmount = Number(data.totalFee);
+      const currencyAmtMinusFees = Number(data.fiatAmount) - totalFeeAmount;
+      const receivedEthAmount = convertQuoteToBase(currencyAmtMinusFees, Number(1 / data.marketConversionPrice));
+
+      return {
+        providerFee: Number(data.feeBreakdown[0].value),
+        networkFee: Number(data.feeBreakdown[1].value),
+        amount: Number(data.fiatAmount),
+        quote: receivedEthAmount,
+        fiatCurrency: fiatCurrency.toUpperCase(),
+        cryptoCurrency: cryptoCurrency.toUpperCase(),
+        provider: item.code,
+        price: 1 / data.marketConversionPrice,
+        noFee: 0
+      
+      };
+    }
     return {
       providerFee: 0,
       networkFee: 0,
@@ -102,10 +119,11 @@ export const fetchProviderAvailability = async (req: Request, res: Response, nex
 
   let availabilityMapping: { [provider: string]: boolean } = {};
   dataPromises.forEach((item) => {
-    if (item.code === 'MoonPay' && !item.error) availabilityMapping[item.code] = item.result.isAllowed;
-    else if (item.code === 'Mercuryo' && !item.error) availabilityMapping[item.code] = item.result.country.enabled;
-    else availabilityMapping[item.code] = false;
+    if (item.code === 'MoonPay' && !item.error) availabilityMapping[item.code] = true //item.result.isAllowed;
+    else if (item.code === 'Mercuryo' && !item.error) availabilityMapping[item.code] = true //item.result.country.enabled;
+    else availabilityMapping[item.code] = true;
   });
+  availabilityMapping['Transak'] = true
   return res.status(200).json({ result: availabilityMapping });
 };
 
