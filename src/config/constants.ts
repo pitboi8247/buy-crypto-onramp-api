@@ -19,22 +19,22 @@ export enum ChainId {
   LINEA_TESTNET = 59140,
 }
 
-export const chainIdToMercuryoNetworkId: { [id: string]: string } = {
-  ETHEREUM: 'ETHEREUM',
-  BSC: 'BINANCESMARTCHAIN',
-  ARBITRUM_ONE: 'ARBITRUM',
-  ZKSYNC: 'ZKSYNC',
-  POLYGON_ZKEVM: 'ZKEVM',
-  LINEA: 'LINEA',
+export const chainIdToMercuryoNetworkId: { [id: number]: string } = {
+  [ChainId.ETHEREUM]: 'ETHEREUM',
+  [ChainId.BSC]: 'BINANCESMARTCHAIN',
+  [ChainId.ARBITRUM_ONE]: 'ARBITRUM',
+  [ChainId.ZKSYNC]: 'ZKSYNC',
+  [ChainId.POLYGON_ZKEVM]: 'ZKEVM',
+  [ChainId.LINEA]: 'LINEA',
 };
 
-export const chainIdToMoonPayNetworkId: { [id: string]: string } = {
-  ETHEREUM: '',
-  BSC: '_bsc',
-  ARBITRUM_ONE: '_arbitrum',
-  ZKSYNC: '_zksync',
-  POLYGON_ZKEVM: '_polygonzkevm',
-  LINEA: '_linea',
+export const chainIdToMoonPayNetworkId: { [id: number]: string } = {
+  [ChainId.ETHEREUM]: '',
+  [ChainId.BSC]: '_bsc',
+  [ChainId.ARBITRUM_ONE]: '_arbitrum',
+  [ChainId.ZKSYNC]: '_zksync',
+  [ChainId.POLYGON_ZKEVM]: '_polygonzkevm',
+  [ChainId.LINEA]: '_linea',
 };
 
 export const chainIdToTransakNetworkId: { [id: number]: string } = {
