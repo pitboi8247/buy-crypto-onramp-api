@@ -28,6 +28,8 @@ export const fetchProviderQuotes = async (req: Request, res: Response, next: Nex
     }, [])
     .filter((item) => typeof item !== 'undefined');
 
+    console.log(dataPromises)
+
   const providerqUOTES = dataPromises.map((item) => {
     if (item.code === 'MoonPay' && !item.error) {
       const { baseCurrencyAmount, networkFeeAmount, quoteCurrencyPrice, feeAmount, extraFeeAmount } = item.result;
