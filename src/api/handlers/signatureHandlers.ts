@@ -74,7 +74,7 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
 export const generateTransakSig = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const transakParams = { ...req.body };
-    const transakUrl = `https://global-stg.transak.com?apiKey=bf960e79-6d98-4fd0-823d-8409d290c346&fiatCurrency=${transakParams.fiatCurrency}&cryptoCurrencyCode=${transakParams.cryptoCurrency}&network=${transakParams.network}&fiatAmount=${transakParams.amount}&walletAddress=${transakParams.walletAddress}&themeColor=1DC7D3`;
+    const transakUrl = `https://global.transak.com?apiKey=cd8e6bf7-b672-41b9-ba1a-d176b83c5f3b=${transakParams.fiatCurrency}&cryptoCurrencyCode=${transakParams.cryptoCurrency}&network=${transakParams.network}&fiatAmount=${transakParams.amount}&walletAddress=${transakParams.walletAddress}&themeColor=1DC7D3`;
 
     res.json({ urlWithSignature: transakUrl });
   } catch (error) {
