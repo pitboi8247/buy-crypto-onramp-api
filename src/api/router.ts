@@ -4,7 +4,7 @@ import {
   fetchMercuryoIpAvailability,
   fetchMoonPayIpAvailability,
   fetchProviderAvailability,
-  fetchProviderQuotes
+  fetchproviderQuotes
 } from './handlers/proxyHandlers';
 import {
   generateMercuryoSig,
@@ -24,7 +24,7 @@ router.route('/generate-transak-sig').post(generateTransakSig)
 router.route('/fetch-moonpay-availability').get(fetchMoonPayIpAvailability);
 router.route('/fetch-mercuryo-availability').get(fetchMercuryoIpAvailability);
 router.route('/user-ip').get(fetchIpDetails);
-router.route('/fetch-provider-quotes').post(fetchProviderQuotes);
+router.route('/fetch-provider-quotes').post(fetchproviderQuotes);
 router.route('/fetch-provider-availability').post(fetchProviderAvailability);
 
 //webhooks

@@ -1,8 +1,9 @@
 import axios from 'axios';
 import config from '../config/config';
+import { ProviderQuotes } from '../typeValidation/types';
 const geoip = require('geoip-lite');
 
-export async function fetchMoonpayAvailability(userIp: string) {
+export async function fetchMoonpayAvailability(userIp: string): Promise<ProviderQuotes> {
   // Fetch data from endpoint 2
   try {
     const response = await axios.get(
@@ -21,7 +22,7 @@ export async function fetchMoonpayAvailability(userIp: string) {
   }
 }
 
-export async function fetchMercuryoAvailability(userIp: string) {
+export async function fetchMercuryoAvailability(userIp: string): Promise<ProviderQuotes> {
   // Fetch data from endpoint 2
   try {
     const response = await axios.get(`https://api.mercuryo.io/v1.6/public/data-by-ip?ip=${userIp}`, {

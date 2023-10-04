@@ -1,4 +1,7 @@
+import { GetTransakPayUrlRequest } from 'typeValidation/model/TransakUrlRequest';
+import config from '../config/config';
 import crypto from 'crypto'
+import { GetMoonPaySignedUrlRequest } from 'typeValidation/model/MoonpaySignedUrlRequest';
 
 export function sign(srcData: string, privateKey: string): string {
     const key = crypto.createPrivateKey(privateKey);
@@ -12,16 +15,11 @@ export const generateHMAC = (secretKey: string, message: string) => {
   return crypto.createHmac("sha256", secretKey).update(message).digest("hex");
 }
 
-export const populate_GET_RequestSigContent = (walletAddress: string, merchantCode: string, timestamp: string) => {
-  return `cryptoAddress=${walletAddress}&cryptoNetwork=ERC20&merchantCode=${merchantCode}&timestamp=${timestamp}`
+export const populateMoonPayUrl = (moonPayParams: GetMoonPaySignedUrlRequest) => {
+  return `&theme=${moonPayParams.theme}&colorCode=%2382DBE3&lockAmount=true&currencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddress=${moonPayParams.walletAddress}`;
 }
 
-export const populatBuildTradeParams = (params) => {
-  return `?cryptoCurrency=${params.cryptoCurrency}&fiatCurrency=${params.fiatCurrency}&orderAmount=${params.amount}&cryptoAddress=${params.walletAddress}&cryptoNetwork=BNB&merchantCode=pancake_swap_test&timestamp=${params.timestamp}&signature=${params.signature}`
-}
-
-export const populateMoonPayUrl = (moonPayParams) => {
-  const supportedTokens = moonPayParams.showOnlyCurrencies
-  const encodedCurrencyList = encodeURIComponent(supportedTokens);
-  return `&theme=${moonPayParams.theme}&colorCode=%2382DBE3&defaultCurrencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddress=${moonPayParams.walletAddress}&showOnlyCurrencies=${encodedCurrencyList}`
+export const populateTransakUrl = (transakParams: GetTransakPayUrlRequest) => {
+  const transakApiKey = config.transakApiKey
+  return `https://global.transak.com?apiKey=${transakApiKey}=${transakParams.fiatCurrency}&cryptoCurrencyCode=${transakParams.cryptoCurrency}&network=${transakParams.network}&fiatAmount=${transakParams.amount}&walletAddress=${transakParams.walletAddress}&themeColor=1DC7D3`;
 }

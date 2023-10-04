@@ -4,10 +4,14 @@ import crypto from 'crypto';
 import qs from 'qs';
 import config from '../../config/config';
 import { MOONPAY_TEST_URL, MOONPAY_URL } from '../../config/constants';
-import { ParsedMercuryGet, ParsedMercuryPOST, validateMercuryoSchema } from '../../typeValidation/validation';
+import { ValidateGetMoonPaySignedUrlRequest, ValidateGetTransakUrlRequest, validateMercuryoSchema } from '../../typeValidation/validation';
 import { APIError } from '../../utils/APIError';
+import { populateMoonPayUrl, populateTransakUrl } from '../../utils/rsa_sig';
+import { GetMoonPaySignedUrlRequest, toDto } from '../../typeValidation/model/MoonpaySignedUrlRequest';
+import { GetTransakPayUrlRequest, toDtoTransak } from '../../typeValidation/model/TransakUrlRequest';
+import { ParsedMercuryGet, ParsedMercuryPOST } from 'typeValidation/types';
 
-export const generateMercuryoSig = async (req: Request, res: Response, next: NextFunction) => {
+export const generateMercuryoSig = async (req: Request, res: Response) => {
   const queryString =
     req.method === 'GET'
       ? qs.stringify({ walletAddress: req.query.walletAddress })
@@ -49,16 +53,23 @@ export const generateMercuryoSig = async (req: Request, res: Response, next: Nex
 };
 
 export const generateMoonPaySig = async (req: Request, res: Response, next: NextFunction) => {
+  const request: GetMoonPaySignedUrlRequest = toDto(req.query);
+	const validationResult = ValidateGetMoonPaySignedUrlRequest(request);
+
+	if (!validationResult.success) {
+		throw new Error(validationResult.data as string);
+	}
   try {
-    const moonPayParams = { ...req.body };
-    const moonPayTradeUrl = `&theme=${moonPayParams.theme}&colorCode=%2382DBE3&lockAmount=true&currencyCode=${moonPayParams.defaultCurrencyCode}&baseCurrencyCode=${moonPayParams.baseCurrencyCode}&baseCurrencyAmount=${moonPayParams.baseCurrencyAmount}&walletAddress=${moonPayParams.walletAddress}`;
+    const moonPayParams = request;
+    const moonPayTradeUrl = populateMoonPayUrl(moonPayParams)
+    
     const isTestEnviornment = moonPayParams.isTestEnv &&  moonPayParams.isTestEnv === 'development' 
     const originalUrl = `${isTestEnviornment ? MOONPAY_TEST_URL : MOONPAY_URL}${moonPayTradeUrl}`;
 
     const signature = crypto
       .createHmac(
         'sha256',
-        isTestEnviornment ? 'sk_test_7zfPNfcZdStyiktn3lOJxOltGttayhC' : 'sk_live_FwlMuWmSACR3MNFA9mwrY8yVswPBpK',
+        isTestEnviornment ? config.moonpayTestSecretKey : config.moonpaySecretKey,
       )
       .update(new URL(originalUrl).search)
       .digest('base64');
@@ -72,9 +83,15 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
 };
 
 export const generateTransakSig = async (req: Request, res: Response, next: NextFunction) => {
+  const request: GetTransakPayUrlRequest = toDtoTransak(req.body);
+	const validationResult = ValidateGetTransakUrlRequest(request);
+
+	if (!validationResult.success) {
+		throw new Error(validationResult.data as string);
+	}
   try {
-    const transakParams = { ...req.body };
-    const transakUrl = `https://global.transak.com?apiKey=cd8e6bf7-b672-41b9-ba1a-d176b83c5f3b=${transakParams.fiatCurrency}&cryptoCurrencyCode=${transakParams.cryptoCurrency}&network=${transakParams.network}&fiatAmount=${transakParams.amount}&walletAddress=${transakParams.walletAddress}&themeColor=1DC7D3`;
+    const transakParams = request;
+    const transakUrl = populateTransakUrl(transakParams)
 
     res.json({ urlWithSignature: transakUrl });
   } catch (error) {

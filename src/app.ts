@@ -1,11 +1,8 @@
 import cors from 'cors';
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
 import router from './api/router';
 import errorHandler from './middleware/errorHandlingMiddleware';
 
-const filePath = path.join(__dirname, './addresses.txt');
 const app = express();
 
 app.use(express.json());
@@ -27,22 +24,6 @@ app.get('/ip', (req, res) => {
     req.socket.remoteAddress ||
     '';
   res.send(ip);
-});
-
-// Define the endpoint
-app.get('/checkItem', (req, res) => {
-  const searchAddress = req.query.searchAddress as string;
-
-  fs.readFile(filePath, 'utf-8', (err, data) => {
-    if (err) {
-      console.error('Error reading wallet addresses:', err);
-      return res.status(500).json({ error: 'Error reading wallet addresses' });
-    }
-    const addresses = data.split('\n').filter((address) => address.trim() !== '');
-    const found = addresses.includes(searchAddress.toLowerCase());
-
-    res.json({ found });
-  });
 });
 
 export default app;

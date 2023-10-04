@@ -1,4 +1,53 @@
-import { WebhookResponse } from 'api/webhookCallbacks/webhookCallbacks';
+import axios from 'axios';
+import { Providers, WebhookResponse } from '../typeValidation/types';
+
+const sendBuyCryptoNotification = async (
+  notificationInfo: WebhookResponse,
+  provider: Providers,
+) => {
+  const successBody = getSuccessNotificationBody(notificationInfo);
+  const failedBody = getFailedNotificationBody(notificationInfo);
+
+  const title =
+    notificationInfo.status === 'complete'
+      ? `${notificationInfo.cryptoCurrency} Purchase Complete`
+      : `${notificationInfo.cryptoCurrency} Purchase Failed`;
+
+  const parts = notificationInfo.transactionId.split('_');
+  const account = parts[0];
+
+  try {
+    const pushNotificationResponse = await await axios.post(
+      `https://notify.walletconnect.com/${"a14938037e06221040c0fa6a69a1d95f"}/notify`,
+      {
+        accounts: [`eip155:1:${account}`],
+        notification: {
+          body: notificationInfo.status === 'complete' ? successBody : failedBody,
+          icon: getNotificationLogo[provider],
+          url: 'https://pc-custom-web.vercel.app',
+          type: 'alerts',
+          title,
+        },
+      }, // Pass the payload directly as data
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer 03533e45-782a-42fb-820d-c0984ed392d9`,
+        },
+      },
+    );
+
+    const result = await pushNotificationResponse.data;
+    if (result.sent.length > 0) {
+      // await sendBrowserNotification('PancakeSwap Alert', 'You have new updates from PancakeSwap DEX.');
+    }
+    return result
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('failed to send push notification', error);
+    }
+  }
+};
 
 async function sendBrowserNotification(title: string, body: string) {
   try {
@@ -12,50 +61,16 @@ async function sendBrowserNotification(title: string, body: string) {
   }
 }
 
-const sendBuyCryptoNotification = async (notificationInfo: WebhookResponse) => {
-  const SuccessBody = `Tranaction complete. ${notificationInfo.cryptoAmount} ${notificationInfo.cryptoCurrency} has successfully arrived to your wallet. \n\n\nTransaction Details: \n Status: ${notificationInfo.status} Transaction id: ${notificationInfo.transactionId} \n Provider Fee: ${notificationInfo.providerFee} ${notificationInfo.fiatCurrency} \n Fiat currency: ${notificationInfo.fiatCurrency} \n Network: ${notificationInfo.network}`;
-  const updateBody = `Purchase status has been updated to '${notificationInfo.status}'`;
-  const failedBody = `Tranaction Failed. Your purchase for ${notificationInfo.cryptoAmount} ${notificationInfo.cryptoCurrency} was unsuccessful and did not go through. \n\n\nTransaction Details: \n Status: ${notificationInfo.status} Transaction id: ${notificationInfo.transactionId} \n Provider Fee: ${notificationInfo.providerFee} ${notificationInfo.fiatCurrency} \n Fiat currency: ${notificationInfo.fiatCurrency} \n Network: ${notificationInfo.network}`;
+const getSuccessNotificationBody = (args: WebhookResponse) =>
+  `${args.cryptoAmount} ${args.cryptoCurrency} has successfully arrived to your wallet. \n\n\nTransaction Details \n Transaction id: ${args.transactionId} \n Provider Fee: ${args.providerFee} ${args.fiatCurrency} \n Fiat currency: ${args.fiatCurrency} \n`;
 
-  const parts = notificationInfo.transactionId.split('_');
-  const account = parts[0];
-
-  const notificationPayload = {
-    accounts: [`eip155:1:${account}`],
-    notification: {
-      title:
-        notificationInfo.status === 'paid'
-          ? 'Crypto Purchase Complete'
-          : notificationInfo.status === 'order_failed'
-          ? 'Crypto Purchase Failed'
-          : 'Crypto Purchase Status Updated',
-      body:
-        notificationInfo.status === 'paid'
-          ? SuccessBody
-          : notificationInfo.status === 'order_failed'
-          ? failedBody
-          : updateBody,
-      icon: `https://tokens.pancakeswap.finance/images/symbol/${notificationInfo.cryptoCurrency.toLowerCase()}.png`,
-      url: 'https://pc-custom-web.vercel.app',
-      type: 'alerts',
-    },
-  };
-  const walletConnectPushResponse = await fetch(
-    `https://notify.walletconnect.com/${'d460b3b88b735222abe849b3d43ed8e4'}/notify`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${'dea2d1c0-4f90-4f4e-b0a4-09e84d52b0ee'}`,
-      },
-      body: JSON.stringify(notificationPayload),
-    },
-  );
-
-  const result = await walletConnectPushResponse.json();
-  // await sendBrowserNotification('PancakeSwap Alert', 'You have recieved a notification from pncakeswap.')
-
-  return result;
+const getFailedNotificationBody = (args: WebhookResponse) =>
+  `Your purchase for ${args.cryptoAmount} ${args.cryptoCurrency} was unsuccessful. \n\n\nTransaction Details: \nTransaction id: ${args.transactionId} \n Provider Fee: ${args.providerFee} ${args.fiatCurrency} \n Fiat currency: ${args.fiatCurrency} \n `;
+  
+const getNotificationLogo: { [provider: string]: string } = {
+  MoonPay: 'https://www.moonpay.com/favicon-purple.ico',
+  Mercuryo: 'https://mercuryo.io/static/img/favicon/light/favicon-32x32.svg',
+  Transak: 'https://transak.com/favicon.png',
 };
 
 export default sendBuyCryptoNotification;

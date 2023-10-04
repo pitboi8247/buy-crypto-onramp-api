@@ -1,50 +1,36 @@
-import { NextFunction, Request, Response } from 'express';
-import { string as zString, object as zObject } from 'zod';
+import { Response } from 'express';
 import qs from 'qs';
-
-type Options =
-  | {
-      method?: string;
-      walletAddress: string;
-      cryptoCurrency: string;
-      fiatCurrency: string;
-      amount: string;
-    }
-  | {
-      method?: string;
-      message?: string;
-    };
-
-export type SafeParseReturnType<U extends Options> = {
-  data: U;
-};
-
-export type ParsedMercuryGet = SafeParseReturnType<{
-  method?: string;
-  walletAddress?: string;
-}>;
-
-export type ParsedMercuryPOST = SafeParseReturnType<{
-  method?: string;
-  message?: string;
-}>;
-
-export const payloadSchema = zObject({
-  walletAddress: zString(),
-  cryptoCurrency: zString(),
-  fiatCurrency: zString(),
-  amount: zString(),
-});
+import { object as zObject, string as zString, number as zNumber } from 'zod';
+import { GetMoonPaySignedUrlRequest } from './model/MoonpaySignedUrlRequest';
+import { GetTransakPayUrlRequest } from './model/TransakUrlRequest';
+import { GetProviderQuotesRequest } from './model/ProviderQuotesRequest';
+import { GetUserIpRequest } from './model/UserIpRequest';
+import { ParsedMercuryGet, ParsedMercuryPOST } from './types';
 
 export const zQueryMoonPay = zObject({
   type: zString(),
-  amount: zString(),
+  baseCurrencyAmount: zString(),
   baseCurrencyCode: zString(),
   defaultCurrencyCode: zString(),
   redirectUrl: zString(),
   theme: zString(),
   walletAddress: zString(),
-  showOnlyCurrencies: zString().array(),
+  isTestEnv: zString(),
+});
+
+export const zQueryTransak = zObject({
+  fiatCurrency: zString(),
+  cryptoCurrency: zString(),
+  amount: zString(),
+  network: zString(),
+  walletAddress: zString(),
+});
+
+export const zQueryProviderQuotes = zObject({
+  fiatCurrency: zString(),
+  cryptoCurrency: zString(),
+  fiatAmount: zNumber(),
+  network: zNumber(),
 });
 
 export const mercuryoGET = zObject({
@@ -61,7 +47,7 @@ export const mercuryoSigningAPISchema = zObject({
 });
 
 export const checkIpPayloadSchema = zObject({
-  clientUserIp: zString(),
+  userIp: zString(),
 });
 
 export const validateMercuryoSchema = (
@@ -74,18 +60,90 @@ export const validateMercuryoSchema = (
   else return parsed;
 };
 
-export function requireQueryParams(params: Array<string>) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const fails: string[] = [];
-    for (const param of params) {
-      if (!req.query[param]) {
-        fails.push(param);
-      }
-    }
-    if (fails.length > 0) {
-      res.status(400).send(`${fails.join(',')} required`);
-    } else {
-      next();
-    }
-  };
-}
+export const ValidateGetMoonPaySignedUrlRequest = (
+  request: GetMoonPaySignedUrlRequest,
+): {
+  success: boolean;
+  data: GetMoonPaySignedUrlRequest | string;
+} => {
+  const result = zQueryMoonPay.safeParse(request);
+  const { success } = result;
+
+  if (success) {
+    const data = result.data as GetMoonPaySignedUrlRequest;
+    return { success, data };
+  } else
+    return {
+      success,
+      data: JSON.stringify(`Moonpay Url signature schema Validation Error ${JSON.stringify(result)}`).replace(
+        /\\/g,
+        '',
+      ),
+    };
+};
+
+export const ValidateGetTransakUrlRequest = (
+  request: GetTransakPayUrlRequest,
+): {
+  success: boolean;
+  data: GetTransakPayUrlRequest | string;
+} => {
+  const result = zQueryTransak.safeParse(request);
+  const { success } = result;
+
+  if (success) {
+    const data = result.data as GetTransakPayUrlRequest;
+    return { success, data };
+  } else
+    return {
+      success,
+      data: JSON.stringify(`Transak Url signature schema Validation Error ${JSON.stringify(result)}`).replace(
+        /\\/g,
+        '',
+      ),
+    };
+};
+
+export const ValidateeProviderQuotesRequest = (
+  request: GetProviderQuotesRequest,
+): {
+  success: boolean;
+  data: GetProviderQuotesRequest | string;
+} => {
+  const result = zQueryProviderQuotes.safeParse(request);
+  const { success } = result;
+
+  if (success) {
+    const data = result.data as GetProviderQuotesRequest;
+    return { success, data };
+  } else
+    return {
+      success,
+      data: JSON.stringify(`Provider quotes signature schema Validation Error ${JSON.stringify(result)}`).replace(
+        /\\/g,
+        '',
+      ),
+    };
+};
+
+export const ValidateUserIpRequest = (
+  request: GetUserIpRequest,
+): {
+  success: boolean;
+  data: GetUserIpRequest | string;
+} => {
+  const result = checkIpPayloadSchema.safeParse(request);
+  const { success } = result;
+
+  if (success) {
+    const data = result.data as GetUserIpRequest;
+    return { success, data };
+  } else
+    return {
+      success,
+      data: JSON.stringify(`Provider quotes signature schema Validation Error ${JSON.stringify(result)}`).replace(
+        /\\/g,
+        '',
+      ),
+    };
+};
