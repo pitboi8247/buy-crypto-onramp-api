@@ -32,7 +32,7 @@ export async function fetchMoonpayQuote(
     const result = response.data;
     return { code: 'MoonPay', result: result, error: false };
   } catch (error) {
-    return { code: 'MoonPay', result: error.response.data, error: true };
+    return { code: 'MoonPay', result: error.response, error: true };
   }
 }
 
@@ -57,7 +57,7 @@ export async function fetchMercuryoQuote(
     const result = response.data.data;
     return { code: 'Mercuryo', result: result, error: false };
   } catch (error) {
-    return { code: 'Mercuryo', result: error.response.data, error: true };
+    return { code: 'Mercuryo', result: error.response, error: true };
   }
 }
 
@@ -84,6 +84,6 @@ export async function fetchTransakQuote(
     const result = response.data;
     return { code: 'Transak', result: result, error: false };
   } catch (error) {
-    return { code: 'Transak', result: error.response.data, error: true };
+    return { code: 'Transak', result: error.response, error: true };
   }
 }
