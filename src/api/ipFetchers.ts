@@ -18,7 +18,7 @@ export async function fetchMoonpayAvailability(userIp: string): Promise<Provider
     const result = response.data;
     return { code: 'MoonPay', result: result, error: false };
   } catch (error) {
-    return { code: 'MoonPay', result: error.response, error: true };
+    return { code: 'MoonPay', result: error.response.data, error: true };
   }
 }
 
@@ -34,7 +34,7 @@ export async function fetchMercuryoAvailability(userIp: string): Promise<Provide
     const result = response.data.data;
     return { code: 'Mercuryo', result: result, error: false };
   } catch (error) {
-    return { code: 'Mercuryo', result: error.response, error: true };
+    return { code: 'Mercuryo', result: error.response.data, error: true };
   }
 }
 
