@@ -165,6 +165,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@pancakeswap/chains@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@pancakeswap/chains/-/chains-0.3.0.tgz#e509dfd9c8387f76b893e3a0a5b835331752b32c"
+  integrity sha512-a4U8pzfxQsnS0nUpvi8qL2X6l2C/IUTFJcmt3UNAQv2L2CPUSryt1rLarG91O1Bb/UMfv90UCPrXJcHWpaYSMg==
+
 "@sinclair/typebox@^0.25.16":
   version "0.25.24"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.24.tgz#8c7688559979f7079aacaf31aa881c3aa410b718"

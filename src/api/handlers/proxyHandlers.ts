@@ -55,7 +55,6 @@ export const fetchproviderQuotes = async (req: Request, res: Response) => {
         cryptoCurrency: cryptoCurrency.toUpperCase(),
         provider: item.code,
         price: item.result.quoteCurrencyPrice,
-        noFee: convertQuoteToBase(baseCurrencyAmount, quoteCurrencyPrice),
       };
     }
     if (item.code === 'Mercuryo' && !item.error) {
@@ -73,7 +72,6 @@ export const fetchproviderQuotes = async (req: Request, res: Response) => {
         cryptoCurrency: cryptoCurrency.toUpperCase(),
         provider: item.code,
         price: item.result.rate,
-        noFee: 0,
       };
     }
     if (item.code === 'Transak' && !item.error) {
@@ -82,16 +80,19 @@ export const fetchproviderQuotes = async (req: Request, res: Response) => {
       const currencyAmtMinusFees = Number(data.fiatAmount) - totalFeeAmount;
       const receivedEthAmount = convertQuoteToBase(currencyAmtMinusFees, Number(1 / data.conversionPrice));
 
+      const pancakeFee = Number(data.feeBreakdown[1]?.value || 0);
+      const providerFee = Number(data.feeBreakdown[0]?.value + pancakeFee || 0);
+      const networkFee = Number(data.feeBreakdown[2]?.value || 0);
+
       return {
-        providerFee: Number(data.feeBreakdown[0].value),
-        networkFee: Number(data.feeBreakdown[1].value),
+        providerFee,
+        networkFee,
         amount: Number(data.fiatAmount),
         quote: receivedEthAmount,
         fiatCurrency: fiatCurrency.toUpperCase(),
         cryptoCurrency: cryptoCurrency.toUpperCase(),
         provider: item.code,
-        price: (1 / data.marketConversionPrice) * 1.0046,
-        noFee: 0,
+        price: 1 / data.marketConversionPrice,
       };
     }
     return {
@@ -103,7 +104,6 @@ export const fetchproviderQuotes = async (req: Request, res: Response) => {
       cryptoCurrency: cryptoCurrency.toUpperCase(),
       provider: item.code,
       price: 0,
-      noFee: 0,
       error: item.code === 'Transak' ? item.result.error.message : item.result.message,
     };
   });
@@ -154,7 +154,7 @@ export const fetchMoonPayIpAvailability = async (req: Request, res: Response, ne
   if (!validationResult.success) {
     throw new Error(validationResult.data as string);
   }
-  const {userIp} = request;
+  const { userIp } = request;
   try {
     const result = await fetchMoonpayAvailability(userIp);
     return res.status(200).json({ result });
@@ -170,7 +170,7 @@ export const fetchMercuryoIpAvailability = async (req: Request, res: Response, n
   if (!validationResult.success) {
     throw new Error(validationResult.data as string);
   }
-  const {userIp} = request;
+  const { userIp } = request;
   try {
     const result = await fetchMercuryoAvailability(userIp);
     return res.status(200).json({ result });

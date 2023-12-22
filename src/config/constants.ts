@@ -1,24 +1,13 @@
 import config from './config';
+import { ChainId } from '@pancakeswap/chains';
 
 export const MOONPAY_URL = `https://buy.moonpay.com?apiKey=${config.moonpayLiveKey}`;
 export const MOONPAY_TEST_URL = `https://buy-sandbox.moonpay.com?apiKey=pk_test_1Ibe44lMglFVL8COOYO7SEKnIBrzrp54`;
-export const BINANCE_CONNECT_URL = 'https://www.binancecnt.com/en/pre-connect';
+export const TRANSAK_URL = `https://global.transak.com?apiKey=${config.transakApiKey}`;
 
-export enum ChainId {
-  ETHEREUM = 1,
-  GOERLI = 5,
-  BSC = 56,
-  BSC_TESTNET = 97,
-  ZKSYNC_TESTNET = 280,
-  ZKSYNC = 324,
-  POLYGON_ZKEVM = 1101,
-  POLYGON_ZKEVM_TESTNET = 1442,
-  ARBITRUM_ONE = 42161,
-  ARBITRUM_GOERLI = 421613,
-  LINEA = 59144,
-  LINEA_TESTNET = 59140,
-  BASE = 8453,
-}
+export const TRANSAK_ENDPOINT = `https://api.transak.com/api/v2`;
+export const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
+export const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
 
 export const chainIdToMercuryoNetworkId: { [id: number]: string } = {
   [ChainId.ETHEREUM]: 'ETHEREUM',
