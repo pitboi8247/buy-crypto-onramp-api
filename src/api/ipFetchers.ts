@@ -113,9 +113,9 @@ export async function fetchTransakAvailability(userIp: string): Promise<Provider
 
 export const fetchIpDetails = async (req, res) => {
       const ipAddress =
-            req.headers["cf-connecting-ip"] ||
-            req.headers["x-real-ip"] ||
             req.headers["x-forwarded-for"] ||
+            req.headers["x-real-ip"] ||
+            req.headers["cf-connecting-ip"] ||
             req.socket.remoteAddress ||
             "";
 

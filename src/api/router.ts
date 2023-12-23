@@ -6,7 +6,10 @@ import {
       generateTransakSig,
 } from "./controllers/fetchProviderSignatures";
 import { fetchIpDetails, fetchTransakAvailability } from "./ipFetchers";
-import { fetchProviderAvailability } from "./controllers/fetchProviderAvailabilities";
+import {
+      fetchProviderAvailability,
+      fetchProviderAvailabilityGet,
+} from "./controllers/fetchProviderAvailabilities";
 
 const router: Router = express.Router();
 
@@ -18,6 +21,7 @@ router.route("/generate-transak-sig").post(generateTransakSig);
 router.route("/fetch-transak-availability").get(fetchTransakAvailability);
 router.route("/user-ip").get(fetchIpDetails);
 router.route("/fetch-provider-quotes").post(fetchproviderQuotes);
+router.route("/fetch-provider-availability-get").get(fetchProviderAvailabilityGet);
 router.route("/fetch-provider-availability").post(fetchProviderAvailability);
 
 export default router;
