@@ -1,81 +1,52 @@
-import winston from 'winston';
-import RnR from 'runtime-node-refresh';
-import httpContext from 'express-http-context';
+import { createLogger, format, Logger, transports } from "winston";
+import * as Transport from "winston-transport";
+import config from "../config/config";
 
-import config from '../config/config';
+export class AppLogger {
+      private logger: Logger;
 
-const errorStackFormat = winston.format((info) => {
-  if (info instanceof Error) {
-    return {
-      ...info,
-      stack: info.stack,
-      message: info.message,
-    };
-  }
-  return info;
-});
-const errorTemplate = ({ timestamp, level, message, stack }) => {
-  const reqId = httpContext.get('ReqId');
-  let tmpl = `${timestamp}`;
-  if (reqId) tmpl += ` ${reqId}`;
-  tmpl += ` ${level} ${message}`;
-  if (stack) tmpl += ` \n ${stack}`;
-  return tmpl;
-};
+      constructor() {
+            this.initLogger();
+      }
 
-const logger: winston.Logger = winston.createLogger({
-  level: config.env === 'development' ? 'debug' : 'info',
-  format: winston.format.combine(
-    errorStackFormat(),
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    config.env === 'development'
-      ? winston.format.colorize()
-      : winston.format.uncolorize(),
-    winston.format.splat(),
-    winston.format.printf(errorTemplate),
-  ),
-  transports: [
-    new winston.transports.Console({
-      stderrLevels: ['error'],
-    }),
-  ],
-});
+      private initLogger() {
+            if (!this.logger) {
+                  let customFormat = format.json();
+                  const transportsConfig: Transport[] = [new transports.Console()];
 
-const avbLogLevels = [
-  'error',
-  'warn',
-  'info',
-  'http',
-  'verbose',
-  'debug',
-  'silly',
-];
+                  const httpTransportOptions = {
+                        host: "http-intake.logs.us3.datadoghq.com",
+                        path: `/api/v2/logs?dd-api-key=${config.dataDogApiKey}&ddsource=nodejs&service=${config.dataDogAppName}`,
+                        ssl: true,
+                  };
 
-let currentLogLevel: number = logger.levels[logger.level];
+                  if (config.env !== "production") {
+                        customFormat = format.combine(format.timestamp(), this.customPrintf());
+                  } else {
+                        // transportsConfig.push(new transports.Http(httpTransportOptions));
+                        customFormat = format.combine(format.timestamp(), this.customPrintf());
+                  }
 
-logger.info(`Logger level is set to ${logger.level}`);
+                  this.logger = createLogger({
+                        format: customFormat,
+                        transports: transportsConfig,
+                        level: "debug",
+                  });
+            }
+      }
 
-// Refresh log level on runtime
-RnR(() => {
-  if (currentLogLevel < avbLogLevels.length - 1) {
-    currentLogLevel += 1;
-  } else {
-    currentLogLevel = 0;
-  }
-  const found = Object.entries(logger.levels).find(
-    ([, value]) => value === currentLogLevel,
-  );
-  if (found && found.length) {
-    // eslint-disable-next-line
-    console.log(
-      `${new Date().toISOString()} system: Switch logger level from ${
-        logger.level
-      } to ${found[0]}`,
-    );
-    logger.level = found[`${0}`];
-  }
-});
+      private customPrintf() {
+            return format.printf(({ level, message, label, timestamp }) => {
+                  return `${timestamp} | ${level.toLowerCase().padEnd(5)} | ${label.padEnd(
+                        20
+                  )} | ${message}`;
+            });
+      }
 
-
-
-export default logger;
+      getLogger(label: string) {
+            if (label.length > 30) {
+                  throw new Error("Too long label");
+            }
+            return this.logger.child({ label });
+      }
+}
