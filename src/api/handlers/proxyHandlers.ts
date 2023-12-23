@@ -138,7 +138,7 @@ export const fetchProviderAvailability = async (req: Request, res: Response) => 
 
   let availabilityMapping: { [provider: string]: boolean } = {};
   dataPromises.forEach((item) => {
-    availabilityMapping[item.code] = true; //item.result.isAllowed;
+    availabilityMapping['MoonPay'] = true; //item.result.isAllowed;
     if (item.code === 'Mercuryo' && !item.error) availabilityMapping[item.code] = true; //item.result.country.enabled;
     else availabilityMapping[item.code] = true;
   });
