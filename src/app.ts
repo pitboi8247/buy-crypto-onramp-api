@@ -1,15 +1,15 @@
-import cors from "cors";
 import compression from "compression";
+import cors from "cors";
+import express, { Express } from "express";
+import expressRateLimit from "express-rate-limit";
 import helmet from "helmet";
 import hpp from "hpp";
-import express, { Express, NextFunction, Request, Response } from "express";
-import expressRateLimit from "express-rate-limit";
+import { Server } from "http";
+import { Logger } from "winston";
 import router from "./api/router";
 import config from "./config/config";
-import { AppLogger } from "./utils/logger";
-import { Logger } from "winston";
-import { Server } from "http";
 import errorHandlingMiddleware from "./midleware/errorHandlingMiddleware";
+import { AppLogger } from "./utils/logger";
 
 export class App extends AppLogger {
       public server: Server;
@@ -21,7 +21,7 @@ export class App extends AppLogger {
             this.app = express();
             this.configureMiddlewares();
             this.configureRoutes(router);
-            // this.configureErrorHandling();
+
             App.log = this.getLogger("on-ramp-api-logger");
             this.configureErrorHandling();
       }

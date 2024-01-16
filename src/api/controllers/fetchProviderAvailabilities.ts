@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { GetUserIpRequest, toDtoUserIp } from "../../typeValidation/model/UserIpRequest";
 import { ProviderQuotes } from "../../typeValidation/types";
-import { ValidateUserIpRequest } from "../../typeValidation/validation";
 import {
       fetchMercuryoAvailability,
       fetchMoonpayAvailability,
@@ -9,18 +7,17 @@ import {
 } from "../ipFetchers";
 
 export const fetchProviderAvailability = async (req: Request, res: Response, next: NextFunction) => {
-      const request: GetUserIpRequest = toDtoUserIp(req.body);
-      const validationResult = ValidateUserIpRequest(request);
-
-      if (!validationResult.success) {
-            throw new Error(validationResult.data as string);
-      }
+      const userIp = (req.headers["x-forwarded-for"] ||
+            req.headers["x-real-ip"] ||
+            req.headers["cf-connecting-ip"] ||
+            req.socket.remoteAddress ||
+            "") as string;
 
       try {
             const responsePromises: Promise<ProviderQuotes>[] = [
-                  fetchMoonpayAvailability(request.userIp),
-                  fetchMercuryoAvailability(request.userIp),
-                  fetchTransakAvailability(request.userIp),
+                  fetchMoonpayAvailability(userIp),
+                  fetchMercuryoAvailability(userIp),
+                  fetchTransakAvailability(userIp),
             ];
             const responses = await Promise.allSettled(responsePromises);
 
@@ -41,18 +38,17 @@ export const fetchProviderAvailability = async (req: Request, res: Response, nex
 };
 
 export const fetchProviderAvailabilityGet = async (req: Request, res: Response, next: NextFunction) => {
-      const request: GetUserIpRequest = toDtoUserIp(req.query);
-      const validationResult = ValidateUserIpRequest(request);
-
-      if (!validationResult.success) {
-            throw new Error(validationResult.data as string);
-      }
+      const userIp = (req.headers["x-forwarded-for"] ||
+            req.headers["x-real-ip"] ||
+            req.headers["cf-connecting-ip"] ||
+            req.socket.remoteAddress ||
+            "") as string;
 
       try {
             const responsePromises: Promise<ProviderQuotes>[] = [
-                  fetchMoonpayAvailability(request.userIp),
-                  fetchMercuryoAvailability(request.userIp),
-                  fetchTransakAvailability(request.userIp),
+                  fetchMoonpayAvailability(userIp),
+                  fetchMercuryoAvailability(userIp),
+                  fetchTransakAvailability(userIp),
             ];
             const responses = await Promise.allSettled(responsePromises);
 

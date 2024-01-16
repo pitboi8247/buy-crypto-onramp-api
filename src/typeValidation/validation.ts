@@ -1,12 +1,8 @@
-import { Response } from "express";
-import qs from "qs";
-import { object as zObject, string as zString, number as zNumber } from "zod";
-import { GetMoonPaySignedUrlRequest } from "./model/MoonpaySignedUrlRequest";
-import { GetTransakPayUrlRequest } from "./model/TransakUrlRequest";
-import { GetProviderQuotesRequest } from "./model/ProviderQuotesRequest";
-import { GetUserIpRequest } from "./model/UserIpRequest";
-import { ParsedMercuryGet, ParsedMercuryPOST } from "./types";
+import { number as zNumber, object as zObject, string as zString } from "zod";
 import { GetMercuryoSignatureRequest } from "./model/MercuryoSignatureRequest";
+import { GetMoonPaySignedUrlRequest } from "./model/MoonpaySignedUrlRequest";
+import { GetProviderQuotesRequest } from "./model/ProviderQuotesRequest";
+import { GetTransakPayUrlRequest } from "./model/TransakUrlRequest";
 
 export const zQueryMoonPay = zObject({
       type: zString(),
@@ -116,27 +112,6 @@ export const ValidateeProviderQuotesRequest = (
 
       if (success) {
             const data = result.data as GetProviderQuotesRequest;
-            return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
-};
-
-export const ValidateUserIpRequest = (
-      request: GetUserIpRequest
-): {
-      success: boolean;
-      data: GetUserIpRequest | string;
-} => {
-      const result = checkIpPayloadSchema.safeParse(request);
-      const { success } = result;
-
-      if (success) {
-            const data = result.data as GetUserIpRequest;
             return { success, data };
       } else
             return {
