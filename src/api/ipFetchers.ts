@@ -45,7 +45,7 @@ const findCountryByAlpha2 = (
 export async function fetchMoonpayAvailability(userIp: string): Promise<ProviderQuotes> {
       try {
             const response = await axios.get(
-                  `https://api.moonpay.com/v4/ip_address?apiKey=${config.moonpayLiveKey}&ipAddress=${userIp}`,
+                  `https://api.moonpay.com/v4/ip_address?apiKey=${config.moonpayProdApiKeyKey}&ipAddress=${userIp}`,
                   {
                         headers: {
                               Accept: "application/json",

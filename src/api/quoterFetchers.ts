@@ -22,7 +22,7 @@ export async function fetchMoonpayQuote(
             const baseCurrency = `${cryptoCurrency.toLowerCase()}${chainIdToMoonPayNetworkId[network]}`;
             const response = await axios.get(
                   `${MOONPAY_EBDPOINT}${baseCurrency}/buy_quote/?apiKey=${
-                        config.moonpayLiveKey
+                        config.moonpayProdApiKeyKey
                   }&baseCurrencyAmount=${fiatAmount}&baseCurrencyCode=${fiatCurrency.toLowerCase()}`,
                   {
                         headers: {
@@ -49,7 +49,7 @@ export async function fetchMercuryoQuote(
             const response = await axios.get(
                   `${MERCURYO_ENDPOINT}?from=${fiatCurrency.toUpperCase()}&to=${cryptoCurrency.toUpperCase()}&amount=${amount}&network=${
                         chainIdToMercuryoNetworkId[network]
-                  }&widget_id=a9f3d282-db2d-4364-ae62-602c5000f003&payment_method=mobile_pay`,
+                  }&widget_id=${config.mercuryoProdWidgetId}&payment_method=mobile_pay`,
                   {
                         headers: {
                               Accept: "application/json",
@@ -73,7 +73,9 @@ export async function fetchTransakQuote(
 ): Promise<ProviderQuotes> {
       try {
             const response = await axios.get(
-                  `${TRANSAK_ENDPOINT}/currencies/price?partnerApiKey=cd8e6bf7-b672-41b9-ba1a-d176b83c5f3b&fiatCurrency=${fiatCurrency.toUpperCase()}&cryptoCurrency=${cryptoCurrency.toUpperCase()}&network=${
+                  `${TRANSAK_ENDPOINT}/currencies/price?partnerApiKey=${
+                        config.transakProdApiKey
+                  }&fiatCurrency=${fiatCurrency.toUpperCase()}&cryptoCurrency=${cryptoCurrency.toUpperCase()}&network=${
                         chainIdToTransakNetworkId[network]
                   }&fiatAmount=${fiatAmount}&paymentMethod=credit_debit_card&isBuyOrSell=BUY`,
                   {
