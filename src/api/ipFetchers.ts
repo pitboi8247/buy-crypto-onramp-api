@@ -58,6 +58,7 @@ export async function fetchMoonpayAvailability(userIp: string): Promise<Provider
             App.log.info(`User IP info MoonPay: ${JSON.stringify(result)}`);
             return { code: "MoonPay", result: result.isAllowed, error: false };
       } catch (error) {
+            // console.log(error);
             App.log.error(`Error fetching MoonPay availability: ${error}`);
             return { code: "MoonPay", result: false, error: true };
       }
@@ -79,6 +80,7 @@ export async function fetchMercuryoAvailability(userIp: string): Promise<Provide
             App.log.info(`User IP info Mercuryo: ${JSON.stringify(result)}`);
             return { code: "Mercuryo", result: result.country.enabled, error: false };
       } catch (error) {
+            console.log(error);
             App.log.error(`Error fetching Mercuryo availability: ${error}`);
             return { code: "Mercuryo", result: false, error: true };
       }

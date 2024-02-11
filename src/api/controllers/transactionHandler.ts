@@ -5,6 +5,8 @@ import {
       fetchMoonPayTransaction,
       fetchTransakTransaction,
 } from "../transactionFetcher";
+import axios from "axios";
+import config from "../../config/config";
 
 export const fetchTransactionStatus = async (req: Request, res: Response) => {
       try {
@@ -34,3 +36,35 @@ export const fetchTransactionStatus = async (req: Request, res: Response) => {
             return res.status(500).json({ error: "Internal server error" });
       }
 };
+
+export async function fetchMoonPayIntTransaction(req: Request, res: Response) {
+      const { transactionId } = req.body;
+      try {
+            const response = await axios.get(
+                  `https://api.moonpay.com/v1/transactions/${transactionId}?apiKey=${
+                        config.env === "development"
+                              ? config.moonpayTestApiKeyKey
+                              : config.moonpayProdApiKeyKey
+                  }`,
+                  {
+                        headers: {
+                              Accept: "application/json",
+                              "Content-Type": "application/json",
+                        },
+                  }
+            );
+
+            console.log(response.data.externalTransactionId);
+            console.log(response.data[0]);
+
+            const result = response.data;
+            if (result.type === "NotFoundError") {
+                  return res.status(404).json();
+            }
+
+            const { externalTransactionId } = result;
+            return res.status(200).json({ transactionId: externalTransactionId });
+      } catch (error) {
+            return res.status(500).json();
+      }
+}

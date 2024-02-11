@@ -5,6 +5,7 @@ import {
       fetchMoonpayAvailability,
       fetchTransakAvailability,
 } from "../ipFetchers";
+import config from "../../config/config";
 
 export const fetchProviderAvailability = async (req: Request, res: Response, next: NextFunction) => {
       const userIp = (req.headers["x-forwarded-for"] ||
@@ -13,6 +14,14 @@ export const fetchProviderAvailability = async (req: Request, res: Response, nex
             req.socket.remoteAddress ||
             "") as string;
 
+      if (config.env === "development")
+            return res.status(200).json({
+                  result: {
+                        MoonPay: true,
+                        Mercuryo: true,
+                        Transak: true,
+                  },
+            });
       try {
             const responsePromises: Promise<ProviderQuotes>[] = [
                   fetchMoonpayAvailability(userIp),
@@ -44,6 +53,14 @@ export const fetchProviderAvailabilityGet = async (req: Request, res: Response, 
             req.socket.remoteAddress ||
             "") as string;
 
+      if (config.env === "development")
+            return res.status(200).json({
+                  result: {
+                        MoonPay: true,
+                        Mercuryo: true,
+                        Transak: true,
+                  },
+            });
       try {
             const responsePromises: Promise<ProviderQuotes>[] = [
                   fetchMoonpayAvailability(userIp),

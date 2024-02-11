@@ -200,7 +200,7 @@ export async function fetchTransakTransaction(
                               Accept: "application/json",
                               "Content-Type": "application/json",
                               "access-token":
-                                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBUElfS0VZIjoiZjJiODVjZjItMmVhNS00Y2E3LWFhZWQtOTZjODczMDY2NDU4IiwiaWF0IjoxNzA2NzgzMTU4LCJleHAiOjE3MDczODc5NTh9.HdueKprD6NN7nKK3aR3x3Ej9ZqhbR6I9-AMeLCXEHV0",
+                                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBUElfS0VZIjoiZjJiODVjZjItMmVhNS00Y2E3LWFhZWQtOTZjODczMDY2NDU4IiwiaWF0IjoxNzA3NTc5NDQ0LCJleHAiOjE3MDgxODQyNDR9.APvBab9XuchAJgULGAWaWLLamIDnssFl1I5UUQUWs2Y",
                         },
                   }
             );
@@ -211,6 +211,7 @@ export async function fetchTransakTransaction(
             }
 
             console.log("heyyy");
+            console.log(result.data);
             const transactionData = result.data[0];
             const { status, partnerOrderId, createdAt } = transactionData;
             let overrideStatus = status;

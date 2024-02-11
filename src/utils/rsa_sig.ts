@@ -2,7 +2,6 @@ import crypto from "crypto";
 import { GetProviderSigRequest } from "../typeValidation/model/ProxiedSigRequest";
 import config from "../config/config";
 import {
-      MERCURYO_ENDPOINT,
       MERCURYO_PROD_URL,
       MERCURYO_TEST_URL,
       TRANSAK_PROD_URL,
@@ -26,11 +25,10 @@ export const populateMoonPayUrl = (moonPayParams: GetProviderSigRequest) => {
             moonPayParams.amount
       }&externalTransactionId=${moonPayParams.externalTransactionId}&walletAddress=${
             moonPayParams.walletAddress
-      }&redirectUrl=${encodeURIComponent(moonPayParams.redirectUrl)}`;
+      }&redirectURL=${encodeURIComponent(moonPayParams.redirectUrl)}`;
 };
 
 export const populateTransakUrl = (transakParams: GetProviderSigRequest) => {
-      const transakApiKey = "f2b85cf2-2ea5-4ca7-aaed-96c873066458";
       return `${config.env === "development" ? TRANSAK_TEST_URL : TRANSAK_PROD_URL}/?apiKey=${
             config.env === "development" ? config.transakTestApiKey : config.transakProdApiKey
       }&fiatCurrency=${transakParams.fiatCurrency}&cryptoCurrencyCode=${
