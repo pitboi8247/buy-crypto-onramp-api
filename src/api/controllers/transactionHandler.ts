@@ -11,7 +11,7 @@ import config from "../../config/config";
 export const fetchTransactionStatus = async (req: Request, res: Response) => {
       try {
             const { transaction } = req.body as { transaction: TxSummary };
-            const provider = transaction.buyCryptoDetails?.provider;
+            const provider = transaction?.provider;
 
             let transactionResult: { transaction: TxSummary } | undefined;
             switch (provider) {

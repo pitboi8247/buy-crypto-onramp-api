@@ -30,6 +30,8 @@ export const generateMoonPaySig = async (req: Request, res: Response, next: Next
       const moonPayParams: GetMoonPaySignedUrlRequest = toDto(req.body);
       const validationResult = ValidateGetMoonPaySignedUrlRequest(moonPayParams);
 
+      console.log(validationResult);
+
       if (!validationResult.success) {
             throw new Error(validationResult.data as string);
       }

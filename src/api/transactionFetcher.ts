@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "../config/config";
+import { ONRAMP_PROVIDERS } from "../config/constants";
 
 export enum TransactionStatus {
       Cancelled = "cancelled",
@@ -13,55 +14,22 @@ export enum TransactionStatus {
       WaitingForAuthorization = "waitingAuthorization",
       // May want more granular options here later like InMemPool
 }
+
 export type TxSummary = {
+      type: "buyCrypto";
       id: string;
       chainId: number;
-      type: "swap" | "send" | "receive" | "erc20Approve" | "tx" | "buyCrypto" | (string & object);
-      from?: string;
-      to?: string;
-      hash?: any;
-      isUserOp?: boolean;
-      status?: 0 | 1 | TransactionStatus;
-      txIndex?: number;
-      timestamp: string;
-      assetsChange: {
-            type: string | null;
-            value: string;
-            sender?: string;
-            recipient?: string;
-            direction?: any;
-            quantity?: string;
-            currency?: {
-                  isSpam?: boolean;
-                  string: string;
-                  name?: string;
-                  symbol?: string;
-                  decimals?: number;
-                  logoURI?: string;
-            };
-      }[];
-      erc20GasFee?: {
-            string: string;
-            currency: {
-                  isSpam?: boolean;
-                  string: string;
-                  name?: string;
-                  symbol?: string;
-                  decimals?: number;
-                  logoURI?: string;
-            };
-            value: string;
-            quantity?: string;
-      };
-      buyCryptoDetails?: {
-            addedTime?: number;
-            provider: any;
-            cryptoCurrency: any;
-            fiatCurrency: any;
-            providerFee: number;
-            networkFee: number;
-            synced: boolean;
-      };
+      // TODO: move /components/buy/constants.ts to /constants/onramp
+      // lib should not depend on components
+      provider: keyof typeof ONRAMP_PROVIDERS;
+      cryptoCurrency: any;
+      fiatCurrency: any;
+      status: TransactionStatus;
+      // TODO: use string with iso format instead
+      addedTime: number;
+      providerFee: number;
+      networkFee: number;
+      synced: boolean;
 };
 
 export const delay = async (delayTime: number) =>
@@ -120,10 +88,7 @@ export async function fetchMoonPayTransaction(
                         ...transaction,
                         id: externalTransactionId,
                         status: overrideStatus,
-                        buyCryptoDetails: {
-                              ...transaction.buyCryptoDetails,
-                              synced: true,
-                        },
+                        synced: true,
                   },
             };
       } catch (error) {
@@ -173,10 +138,7 @@ export async function fetchMercuryoTransaction(
                         ...transaction,
                         id: merchant_transaction_id,
                         status: overrideStatus,
-                        buyCryptoDetails: {
-                              ...transaction.buyCryptoDetails,
-                              synced: true,
-                        },
+                        synced: true,
                   },
             };
       } catch (error) {
@@ -191,9 +153,9 @@ export async function fetchTransakTransaction(
       try {
             const response = await axios.get(
                   `https://api-stg.transak.com/partners/api/v2/orders?limit=1&startDate=${formatDate(
-                        transaction.buyCryptoDetails?.addedTime
+                        transaction?.addedTime
                   )}&endDate=${formatDate(
-                        transaction.buyCryptoDetails?.addedTime
+                        transaction?.addedTime
                   )}&filter[productsAvailed]=%5B%22BUY%22%5D&filter[sortOrder]=desc`,
                   {
                         headers: {
@@ -241,10 +203,7 @@ export async function fetchTransakTransaction(
                         ...transaction,
                         id: partnerOrderId,
                         status: overrideStatus,
-                        buyCryptoDetails: {
-                              ...transaction.buyCryptoDetails,
-                              synced: true,
-                        },
+                        synced: true,
                   },
             };
       } catch (error) {
