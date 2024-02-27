@@ -1,5 +1,14 @@
 # PancakeSwap Buy Crypto API
 
+## Overview
+The PancakeSwap BuyCryto/FiatOnramp api servers as a an api to abstract many of the speciic api calls that we use for our fiat on-ramp aggregator on the pancakeswap web app. 
+Our aggregator supports three on-ramp providers, Moonpay, Mercuryo and Transak. Each of thse providers has there own REST API spec for generating price quotes, max-min buy amounts, and
+other signature generation for completing purchases. This API servers as an abstraction to proxy various API endpoints from each of thse providers into one single endpoint that we call
+on our from end from this service.
+
+For example out `quotes` endpoint will aggregate or call each of our three providers quote endpoint and proxy these into one call that we can serve to save our FE having to make all calls
+individually to get the data we need from each provider seperately. We proxy many different endpoints from each provider which we will describe in the spec below
+
 ## Table of Contents
 - [Overview](#overview)
 - [Description](#description)
@@ -10,21 +19,10 @@
   - [FetchProviderQuotes](#fetchproviderquotes)
 - [Type Validation](#type-validation)
 
-## Overview
-
-The PancakeSwap BuyCryto/FiatOnramp api servers as a an api to abstract many of the speciic api calls that we use for our fiat on-ramp aggregator on the pancakeswap web app. 
-Our aggregator supports three on-ramp providers, Moonpay, Mercuryo and Transak. Each of thse providers has there own REST API spec for generating price quotes, max-min buy amounts, and
-other signature generation for completing purchases. This API servers as an abstraction to proxy various API endpoints from each of thse providers into one single endpoint that we call
-on our from end from this service.
-
-For example out `quotes` endpoint will aggregate or call each of our three providers quote endpoint and proxy these into one call that we can serve to save our FE having to make all calls
-individually to get the data we need from each provider seperately. We proxy many different endpoints from each provider which we will describe in the spec below
-
 ## Description
-
 This service is an express app which uses the express router in combination with the controller/handler design philosophy for generating our REST api. The api file structure follows 
-
-```src
+```css
+src
 └── api
     ├── controllers/
     └── handlers/
@@ -195,7 +193,8 @@ This endpoint's controller implementation is located at `src/api/controllers/fet
 This service uses strong typing with the implementation of Zod for verifyng the correct type of each endpoints query pramaters. if the wrong query parameters or the wrong type is passd into a api call, a validation error will be
 returned to the users a the response. The servics validation logic can found at
 
-```src
+```css
+src
 └── typeValidation
     ├── model/
     ├── validation.ts
