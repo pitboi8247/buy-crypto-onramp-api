@@ -1,7 +1,7 @@
-# Pancake Buy Crypto API
+# PancakeSwap Buy Crypto API
 
 ## Table of Contents
-- [Overview](##Overview)
+- [Overview](#overview)
 - [Description](#description)
 - [Endpoints](#endpoints)
   - [FetchProviderLimits](#fetchproviderlimits)
@@ -11,8 +11,6 @@
 - [Type Validation](#type-validation)
 
 ## Overview
-
-Pancake Buy Crypto API
 
 The PancakeSwap BuyCryto/FiatOnramp api servers as a an api to abstract many of the speciic api calls that we use for our fiat on-ramp aggregator on the pancakeswap web app. 
 Our aggregator supports three on-ramp providers, Moonpay, Mercuryo and Transak. Each of thse providers has there own REST API spec for generating price quotes, max-min buy amounts, and
