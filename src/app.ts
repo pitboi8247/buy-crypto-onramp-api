@@ -34,12 +34,12 @@ export class App extends AppLogger {
                   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
                   message: "Too many requests",
             });
-            // this.app.use(cors({ origin: "*" }));
-            // this.app.use(hpp());
-            // this.app.use(helmet());
+            this.app.use(cors({ origin: "*" }));
+            this.app.use(hpp());
+            this.app.use(helmet());
             this.app.use(compression());
             this.app.use(express.json());
-            // this.app.use(rateLimit);
+            this.app.use(rateLimit);
       }
 
       private configureRoutes(router: express.Router): void {
