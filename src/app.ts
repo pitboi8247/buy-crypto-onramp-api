@@ -39,7 +39,7 @@ export class App extends AppLogger {
             this.app.use(helmet());
             this.app.use(compression());
             this.app.use(express.json());
-            this.app.use(rateLimit);
+            // this.app.use(rateLimit);
       }
 
       private configureRoutes(router: express.Router): void {

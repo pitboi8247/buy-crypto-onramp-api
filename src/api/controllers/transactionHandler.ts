@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import {
-      TxSummary,
       fetchMercuryoTransaction,
       fetchMoonPayTransaction,
       fetchTransakTransaction,
 } from "../transactionFetcher";
 import axios from "axios";
 import config from "../../config/config";
+import { TxSummary } from "../types";
 
 export const fetchTransactionStatus = async (req: Request, res: Response) => {
       try {
@@ -16,7 +16,6 @@ export const fetchTransactionStatus = async (req: Request, res: Response) => {
             let transactionResult: { transaction: TxSummary } | undefined;
             switch (provider) {
                   case "MoonPay":
-                        console.log("jeyyyy");
                         transactionResult = await fetchMoonPayTransaction(transaction);
                         break;
                   case "Mercuryo":

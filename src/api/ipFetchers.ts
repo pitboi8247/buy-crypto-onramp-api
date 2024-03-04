@@ -4,23 +4,7 @@ import { ProviderQuotes } from "../typeValidation/types";
 import { App } from "./../app";
 import geoip from "geoip-lite";
 import { whereAlpha2 } from "iso-3166-1";
-
-interface CountryInfo {
-      alpha2: string;
-      alpha3: string;
-      isAllowed: boolean;
-      isLightKycAllowed: boolean;
-      name: string;
-      supportedDocuments: string[];
-      currencyCode: string;
-      partners?: Partner[];
-}
-
-interface Partner {
-      name: string;
-      isCardPayment: boolean;
-      currencyCode: string;
-}
+import { CountryInfo } from "./types";
 
 const findCountryByAlpha2 = (
       alpha2Code: string,

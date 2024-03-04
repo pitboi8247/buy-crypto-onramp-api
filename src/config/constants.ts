@@ -28,6 +28,7 @@ export const chainIdToMercuryoNetworkId: { [id: number]: string } = {
       [ChainId.POLYGON_ZKEVM]: "ZKEVM",
       [ChainId.LINEA]: "LINEA",
       [ChainId.BASE]: "LINEA",
+      0: "BITCOIN",
 };
 
 export const chainIdToMoonPayNetworkId: { [id: number]: string } = {
@@ -38,6 +39,7 @@ export const chainIdToMoonPayNetworkId: { [id: number]: string } = {
       [ChainId.POLYGON_ZKEVM]: "_polygonzkevm",
       [ChainId.LINEA]: "_linea",
       [ChainId.BASE]: "_base",
+      0: "",
 };
 
 export const chainIdToTransakNetworkId: { [id: number]: string } = {
@@ -48,4 +50,5 @@ export const chainIdToTransakNetworkId: { [id: number]: string } = {
       [ChainId.POLYGON_ZKEVM]: "polygonzkevm",
       [ChainId.LINEA]: "linea",
       [ChainId.BASE]: "base",
+      0: "mainnet",
 };

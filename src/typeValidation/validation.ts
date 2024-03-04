@@ -8,6 +8,7 @@ import { GetUserIpRequest } from "./model/UserIpRequest";
 import { ParsedMercuryGet, ParsedMercuryPOST } from "./types";
 import { GetProviderLimitRequest } from "./model/ProviderLimitRequest";
 import { GetProviderSigRequest } from "./model/ProxiedSigRequest";
+import { GetBtcAddressValidationRequest } from "./model/BitcoinAddressValidationRequest";
 
 export const zQueryMoonPay = zObject({
       type: zString(),
@@ -59,6 +60,10 @@ export const checkIpPayloadSchema = zObject({
       userIp: zString(),
 });
 
+export const checkBtcAddressPayloadSchema = zObject({
+      address: zString(),
+      network: zEnum(["mainnet", "testnet", "regtest"]),
+});
 export const zQueryProviderSig = zObject({
       provider: zEnum(["MoonPay", "Mercuryo", "Transak"]),
       fiatCurrency: zString(),
@@ -195,6 +200,27 @@ export const ValidateUserIpRequest = (
 
       if (success) {
             const data = result.data as GetUserIpRequest;
+            return { success, data };
+      } else
+            return {
+                  success,
+                  data: JSON.stringify(
+                        `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
+                  ).replace(/\\/g, ""),
+            };
+};
+
+export const ValidateBitcoinAddressRes = (
+      request: GetBtcAddressValidationRequest
+): {
+      success: boolean;
+      data: GetBtcAddressValidationRequest | string;
+} => {
+      const result = checkBtcAddressPayloadSchema.safeParse(request);
+      const { success } = result;
+
+      if (success) {
+            const data = result.data as GetBtcAddressValidationRequest;
             return { success, data };
       } else
             return {

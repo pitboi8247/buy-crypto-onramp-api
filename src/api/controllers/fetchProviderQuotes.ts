@@ -3,11 +3,7 @@ import { GetProviderQuotesRequest, toDtoQuotes } from "../../typeValidation/mode
 import { ProviderQuotes } from "../../typeValidation/types";
 import { ValidateeProviderQuotesRequest } from "../../typeValidation/validation";
 import { fetchMercuryoQuote, fetchMoonpayQuote, fetchTransakQuote } from "../quoterFetchers";
-
-function convertQuoteToBase(usdAmount: number, etherPrice: number): number {
-      const ethAmount = usdAmount / etherPrice;
-      return ethAmount;
-}
+import { convertQuoteToBase } from "../../utils/utils";
 
 export const fetchproviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
       const request: GetProviderQuotesRequest = toDtoQuotes(req.body);

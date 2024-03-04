@@ -1,36 +1,6 @@
 import axios from "axios";
 import config from "../config/config";
-import { ONRAMP_PROVIDERS } from "../config/constants";
-
-export enum TransactionStatus {
-      Cancelled = "cancelled",
-      Cancelling = "cancelling",
-      FailedCancel = "failedCancel",
-      Success = "completed",
-      Failed = "failed",
-      Pending = "pending",
-      Replacing = "replacing",
-      Unknown = "unknown",
-      WaitingForAuthorization = "waitingAuthorization",
-      // May want more granular options here later like InMemPool
-}
-
-export type TxSummary = {
-      type: "buyCrypto";
-      id: string;
-      chainId: number;
-      // TODO: move /components/buy/constants.ts to /constants/onramp
-      // lib should not depend on components
-      provider: keyof typeof ONRAMP_PROVIDERS;
-      cryptoCurrency: any;
-      fiatCurrency: any;
-      status: TransactionStatus;
-      // TODO: use string with iso format instead
-      addedTime: number;
-      providerFee: number;
-      networkFee: number;
-      synced: boolean;
-};
+import { TransactionStatus, TxSummary } from "./types";
 
 export const delay = async (delayTime: number) =>
       await new Promise((resolve) => setTimeout(resolve, delayTime));
