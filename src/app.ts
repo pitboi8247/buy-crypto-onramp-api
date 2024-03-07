@@ -27,19 +27,19 @@ export class App extends AppLogger {
       }
 
       private configureMiddlewares(): void {
-            const rateLimit = expressRateLimit({
-                  windowMs: 60 * 1000, // 1 minutes
-                  limit: 60, // Limit each IP to 60 requests per `window` (here, per 1 minutes)
-                  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-                  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-                  message: "Too many requests",
-            });
+            // const rateLimit = expressRateLimit({
+            //       windowMs: 60 * 1000, // 1 minutes
+            //       limit: 60, // Limit each IP to 60 requests per `window` (here, per 1 minutes)
+            //       standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+            //       legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+            //       message: "Too many requests",
+            // });
             this.app.use(cors({ origin: "*" }));
-            this.app.use(hpp());
-            this.app.use(helmet());
-            this.app.use(compression());
+            // this.app.use(hpp());
+            // this.app.use(helmet());
+            // this.app.use(compression());
             this.app.use(express.json());
-            this.app.use(rateLimit);
+            // this.app.use(rateLimit);
       }
 
       private configureRoutes(router: express.Router): void {
