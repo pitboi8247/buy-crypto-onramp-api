@@ -1,6 +1,12 @@
 import { Response } from "express";
 import qs from "qs";
-import { object as zObject, string as zString, number as zNumber, enum as zEnum } from "zod";
+import {
+      object as zObject,
+      string as zString,
+      number as zNumber,
+      enum as zEnum,
+      boolean as zBoolean,
+} from "zod";
 import { GetMoonPaySignedUrlRequest } from "./model/MoonpaySignedUrlRequest";
 import { GetTransakPayUrlRequest } from "./model/TransakUrlRequest";
 import { GetProviderQuotesRequest } from "./model/ProviderQuotesRequest";
@@ -35,6 +41,7 @@ export const zQueryProviderQuotes = zObject({
       cryptoCurrency: zString(),
       fiatAmount: zNumber(),
       network: zNumber(),
+      isFiat: zBoolean(),
 });
 
 export const zQueryProviderLimit = zObject({

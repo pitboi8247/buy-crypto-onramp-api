@@ -2,7 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { GetProviderQuotesRequest, toDtoQuotes } from "../../typeValidation/model/ProviderQuotesRequest";
 import { ProviderQuotes } from "../../typeValidation/types";
 import { ValidateeProviderQuotesRequest } from "../../typeValidation/validation";
-import { fetchMercuryoQuote, fetchMoonpayQuote, fetchTransakQuote } from "../quoterFetchers";
+import {
+      fetchMercuryoQuote,
+      fetchMercuryoQuoteSell,
+      fetchMoonpayQuote,
+      fetchTransakQuote,
+} from "../quoterFetchers";
 import { convertQuoteToBase } from "../../utils/utils";
 
 export const fetchproviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
@@ -12,12 +17,15 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
       if (!validationResult.success) {
             throw new Error(validationResult.data as string);
       }
-      const { fiatCurrency, cryptoCurrency, fiatAmount, network } = request;
+      const { fiatCurrency, cryptoCurrency, fiatAmount, network, isFiat } = request;
+      console.log(isFiat);
       try {
             const responsePromises: Promise<ProviderQuotes>[] = [
-                  fetchMoonpayQuote(fiatAmount, cryptoCurrency, fiatCurrency, network),
-                  fetchMercuryoQuote(fiatCurrency, cryptoCurrency, fiatAmount, network),
-                  fetchTransakQuote(fiatAmount, cryptoCurrency, fiatCurrency, network),
+                  fetchMoonpayQuote(fiatAmount, cryptoCurrency, fiatCurrency, network, isFiat),
+                  isFiat
+                        ? fetchMercuryoQuote(fiatCurrency, cryptoCurrency, fiatAmount, network)
+                        : fetchMercuryoQuoteSell(fiatCurrency, cryptoCurrency, fiatAmount, network),
+                  fetchTransakQuote(fiatAmount, cryptoCurrency, fiatCurrency, network, isFiat),
             ];
             const responses = await Promise.allSettled(responsePromises);
 
@@ -48,8 +56,8 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
                         return {
                               providerFee: providerFee,
                               networkFee: networkFeeAmount,
-                              amount: baseCurrencyAmount,
-                              quote: receivedEthAmount,
+                              amount: isFiat ? baseCurrencyAmount : receivedEthAmount,
+                              quote: isFiat ? receivedEthAmount : baseCurrencyAmount,
                               fiatCurrency: fiatCurrency.toUpperCase(),
                               cryptoCurrency: cryptoCurrency.toUpperCase(),
                               provider: item.code,
@@ -58,7 +66,10 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
                   }
                   if (item.code === "Mercuryo" && !item.error) {
                         const data = item.result;
-                        const totalFeeAmount = Number(data.fee[fiatCurrency.toUpperCase()]);
+                        console.log(item.result);
+                        const totalFeeAmount = Number(
+                              !isFiat ? data.fee : data.fee[fiatCurrency.toUpperCase()]
+                        );
                         const currencyAmtMinusFees = Number(data.fiat_amount) - totalFeeAmount;
                         const receivedEthAmount = convertQuoteToBase(
                               currencyAmtMinusFees,
@@ -66,14 +77,14 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
                         );
 
                         return {
-                              providerFee: Number(data.fee[fiatCurrency.toUpperCase()]),
+                              providerFee: totalFeeAmount,
                               networkFee: 0,
-                              amount: Number(data.fiat_amount),
-                              quote: receivedEthAmount,
+                              amount: isFiat ? Number(data.fiat_amount) : receivedEthAmount,
+                              quote: isFiat ? receivedEthAmount : Number(data.fiat_amount),
                               fiatCurrency: fiatCurrency.toUpperCase(),
                               cryptoCurrency: cryptoCurrency.toUpperCase(),
                               provider: item.code,
-                              price: item.result.rate,
+                              price: Number(item.result.rate),
                         };
                   }
                   if (item.code === "Transak" && !item.error) {
@@ -92,8 +103,8 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
                         return {
                               providerFee,
                               networkFee,
-                              amount: Number(data.fiatAmount),
-                              quote: receivedEthAmount,
+                              amount: isFiat ? Number(data.fiatAmount) : receivedEthAmount,
+                              quote: isFiat ? receivedEthAmount : Number(data.fiatAmount),
                               fiatCurrency: fiatCurrency.toUpperCase(),
                               cryptoCurrency: cryptoCurrency.toUpperCase(),
                               provider: item.code,
@@ -113,6 +124,7 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
                   };
             });
 
+            console.log(providerQuotes);
             return res.status(200).json({ result: providerQuotes });
       } catch (error) {
             next(error);
