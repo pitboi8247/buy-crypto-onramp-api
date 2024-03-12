@@ -23,9 +23,7 @@ export const generateHMAC = (secretKey: string, message: string) => {
 export const populateMoonPayUrlLegacy = (moonPayParams: any) => {
       return `&theme=light&colorCode=%2382DBE3&lockAmount=true&currencyCode=${moonPayParams.defaultCurrencyCode.toLowerCase()}&baseCurrencyCode=${moonPayParams.baseCurrencyCode.toLowerCase()}&baseCurrencyAmount=${
             moonPayParams.baseCurrencyAmount
-      }&walletAddress=${moonPayParams.walletAddress}&redirectURL=${encodeURIComponent(
-            moonPayParams.redirectUrl
-      )}`;
+      }&walletAddress=${moonPayParams.walletAddress}`;
 };
 
 export const populateMoonPayUrl = (moonPayParams: GetProviderSigRequest) => {
