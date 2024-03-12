@@ -27,7 +27,7 @@ export const fetchProviderSignature = async (req: Request, res: Response, next: 
                               "sha256",
                               isTestEnviornment
                                     ? config.moonpayTestSecretKey
-                                    : "sk_live_FwlMuWmSACR3MNFA9mwrY8yVswPBpK"
+                                    : config.moonpayProdSecretKey
                         )
                         .update(new URL(originalUrl).search)
                         .digest("base64");
