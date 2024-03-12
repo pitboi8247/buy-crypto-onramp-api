@@ -11,13 +11,14 @@ import {
 import { convertQuoteToBase } from "../../utils/utils";
 
 export const fetchproviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
-      const request: GetProviderQuotesRequest = toDtoQuotes(req.body);
-      const validationResult = ValidateeProviderQuotesRequest(request);
+      const request = req.body; // GetProviderQuotesRequest = toDtoQuotes(req.body);
+      // const validationResult = ValidateeProviderQuotesRequest(request);
 
-      if (!validationResult.success) {
-            throw new Error(validationResult.data as string);
-      }
-      const { fiatCurrency, cryptoCurrency, fiatAmount, network, isFiat } = request;
+      // if (!validationResult.success) {
+      //       throw new Error(validationResult.data as string);
+      // }
+      const { fiatCurrency, cryptoCurrency, fiatAmount, network } = request as any;
+      const isFiat = true;
       console.log(isFiat);
       try {
             const responsePromises: Promise<ProviderQuotes>[] = [

@@ -17,9 +17,7 @@ export const fetchProviderSignature = async (req: Request, res: Response, next: 
       try {
             if (request.provider === "MoonPay") {
                   const moonPayTradeUrl = populateMoonPayUrl(request);
-                  const isTestEnviornment = Boolean(
-                        req.query?.isTestEnv?.toString?.() === "development"
-                  );
+                  const isTestEnviornment = Boolean(config.env === "development");
                   const originalUrl = `${
                         isTestEnviornment ? MOONPAY_TEST_URL : MOONPAY_URL
                   }${moonPayTradeUrl}`;

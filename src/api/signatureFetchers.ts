@@ -10,7 +10,7 @@ import {
       ValidateGetMoonPaySignedUrlRequest,
       ValidateGetTransakUrlRequest,
 } from "../typeValidation/validation";
-import { populateMoonPayUrl, populateTransakUrl } from "../utils/rsa_sig";
+import { populateMoonPayUrl, populateMoonPayUrlLegacy, populateTransakUrl } from "../utils/rsa_sig";
 
 export const generateMercuryoSig = async (req: Request, res: Response, next: NextFunction) => {
       const mercuryoParams = req.body;
@@ -27,16 +27,16 @@ export const generateMercuryoSig = async (req: Request, res: Response, next: Nex
 };
 
 export const generateMoonPaySig = async (req: Request, res: Response, next: NextFunction) => {
-      const moonPayParams: GetMoonPaySignedUrlRequest = toDto(req.body);
-      const validationResult = ValidateGetMoonPaySignedUrlRequest(moonPayParams);
+      const moonPayParams = req.body as any; //: GetMoonPaySignedUrlRequest = toDto(req.body);
+      // const validationResult = ValidateGetMoonPaySignedUrlRequest(moonPayParams);
 
-      console.log(validationResult);
+      // console.log(validationResult);
 
-      if (!validationResult.success) {
-            throw new Error(validationResult.data as string);
-      }
+      // if (!validationResult.success) {
+      //       throw new Error(validationResult.data as string);
+      // }
       try {
-            const moonPayTradeUrl = populateMoonPayUrl(moonPayParams as any);
+            const moonPayTradeUrl = populateMoonPayUrlLegacy(moonPayParams as any);
             const isTestEnviornment = config.env === "development";
 
             const originalUrl = `${
