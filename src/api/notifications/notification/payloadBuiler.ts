@@ -65,5 +65,5 @@ export const notificationBodies: {
       [BuilderNames.TransactionCompleteNotification]: (amount: string | number, currency: string) =>
             `Your transaction for ${amount} ${currency} is completed. the funds should now be in your wallet.`,
       [BuilderNames.TransactionFailedNotification]: (amount: string | number, currency: string) =>
-            `Your transaction for ${amount} ${currency} Failed. Sorry about this please reaxh out to support to follow up on the issue.`,
+            `Your transaction for ${amount} ${currency} Failed. Please reach out to support if you would like to follow up on the issue.`,
 };

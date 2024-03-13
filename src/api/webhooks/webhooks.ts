@@ -138,8 +138,9 @@ export const MercuryoTestWebhook = async (req: Request, res: Response): Promise<
             );
 
             if (mercuryoSignature === expectedSignature) {
-                  const { status, amount, currency } = mercuryoEvent.data;
-                  const walletAddress = "";
+                  const { status, amount, currency, merchant_transaction_id } = mercuryoEvent.data;
+                  const walletAddress = merchant_transaction_id.split("_")[0];
+
                   if (status === "pending") {
                         const body = notificationBodies.TransactionProcessingNotification(
                               amount,
