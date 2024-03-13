@@ -1,134 +1,16 @@
 import axios from "axios";
-import { ChainId } from "@pancakeswap/chains";
+import type { ChainId } from "@pancakeswap/chains";
 import {
-      ONRAMP_PROVIDERS,
+      type LimitQuote,
       chainIdToMoonPayNetworkId,
       chainIdToTransakNetworkId,
+      type BuyLimitResponse,
 } from "../config/constants";
 import toNumber from "lodash/toNumber";
 import toUpper from "lodash/toUpper";
 import type { ProviderQuotes } from "../typeValidation/types";
 import config from "../config/config";
-export const SUPPORTED_ONRAMP_TOKENS = ["ETH", "DAI", "USDT", "USDC", "BUSD", "BNB"];
-export const DEFAULT_FIAT_CURRENCIES = [
-      "USD",
-      "EUR",
-      "GBP",
-      "HKD",
-      "CAD",
-      "AUD",
-      "BRL",
-      "JPY",
-      "KRW",
-      "VND",
-];
-export const WHITELISTED_FIAT_CURRENCIES_BASE = ["EUR", "GBP", "HKD", "CAD", "AUD", "JPY", "KRW", "VND"];
-export const WHITELISTED_FIAT_CURRENCIES_LINEA = [
-      "EUR",
-      "GBP",
-      "HKD",
-      "CAD",
-      "AUD",
-      "JPY",
-      "KRW",
-      "VND",
-];
 
-const SUPPORTED_MERCURYO_BSC_TOKENS = ["BNB", "BUSD"];
-const SUPPORTED_MERCURYO_ETH_TOKENS = ["ETH", "USDT", "DAI"];
-const SUPPORTED_MERCURYO_ARBITRUM_TOKENS = ["ETH", "USDC"];
-
-const SUPPORTED_MONPAY_ETH_TOKENS = ["ETH", "USDC", "DAI", "USDT"];
-const SUPPORTED_MOONPAY_BSC_TOKENS = ["BNB", "BUSD"];
-const SUPPORTED_MOONPAY_ARBITRUM_TOKENS = ["ETH", "USDC"];
-const SUPPORTED_MOONPAY_ZKSYNC_TOKENS = ["ETH", "USDC", "DAI", "USDT"];
-
-const SUPPORTED_TRANSAK_BSC_TOKENS = ["BNB", "BUSD"];
-const SUPPORTED_TRANSAK_ETH_TOKENS = ["ETH", "USDT", "DAI"];
-const SUPPORTED_TRANSAK_ARBITRUM_TOKENS = ["ETH", "USDC"];
-const SUPPORTED_TRANSAK_LINEA_TOKENS = ["ETH", "USDC"];
-const SUPPORTED_TRANSAK_ZKSYNC_TOKENS = ["ETH"];
-const SUPPORTED_TRANSAK_ZKEVM_TOKENS = ["ETH"];
-const SUPPORTED_TRANSAK_BASE_TOKENS = ["ETH", "USDC"];
-
-export const CURRENT_CAMPAIGN_TIMESTAMP = 1694512859;
-
-export enum FeeTypes {
-      TotalFees = "Est. Total Fees",
-      NetworkingFees = "Networking Fees",
-      ProviderFees = "Provider Fees",
-}
-
-const MOONPAY_FEE_TYPES = [FeeTypes.TotalFees, FeeTypes.NetworkingFees, FeeTypes.ProviderFees];
-const MERCURYO_FEE_TYPES = [FeeTypes.TotalFees];
-
-export const supportedTokenMap: {
-      [chainId: number]: {
-            [ONRAMP_PROVIDERS.MoonPay]: string[];
-            [ONRAMP_PROVIDERS.Mercuryo]: string[];
-            [ONRAMP_PROVIDERS.Transak]: string[];
-      };
-} = {
-      [ChainId.BSC]: {
-            [ONRAMP_PROVIDERS.MoonPay]: SUPPORTED_MOONPAY_BSC_TOKENS,
-            [ONRAMP_PROVIDERS.Mercuryo]: SUPPORTED_MERCURYO_BSC_TOKENS,
-            [ONRAMP_PROVIDERS.Transak]: SUPPORTED_TRANSAK_BSC_TOKENS,
-      },
-      [ChainId.ETHEREUM]: {
-            [ONRAMP_PROVIDERS.MoonPay]: SUPPORTED_MONPAY_ETH_TOKENS,
-            [ONRAMP_PROVIDERS.Mercuryo]: SUPPORTED_MERCURYO_ETH_TOKENS,
-            [ONRAMP_PROVIDERS.Transak]: SUPPORTED_TRANSAK_ETH_TOKENS,
-      },
-      [ChainId.ARBITRUM_ONE]: {
-            [ONRAMP_PROVIDERS.MoonPay]: SUPPORTED_MOONPAY_ARBITRUM_TOKENS,
-            [ONRAMP_PROVIDERS.Mercuryo]: SUPPORTED_MERCURYO_ARBITRUM_TOKENS,
-            [ONRAMP_PROVIDERS.Transak]: SUPPORTED_TRANSAK_ARBITRUM_TOKENS,
-      },
-      [ChainId.ZKSYNC]: {
-            [ONRAMP_PROVIDERS.MoonPay]: SUPPORTED_MOONPAY_ZKSYNC_TOKENS,
-            [ONRAMP_PROVIDERS.Mercuryo]: [],
-            [ONRAMP_PROVIDERS.Transak]: SUPPORTED_TRANSAK_ZKSYNC_TOKENS,
-      },
-      [ChainId.LINEA]: {
-            [ONRAMP_PROVIDERS.MoonPay]: [],
-            [ONRAMP_PROVIDERS.Mercuryo]: [],
-            [ONRAMP_PROVIDERS.Transak]: SUPPORTED_TRANSAK_LINEA_TOKENS,
-      },
-      [ChainId.POLYGON_ZKEVM]: {
-            [ONRAMP_PROVIDERS.MoonPay]: [],
-            [ONRAMP_PROVIDERS.Mercuryo]: [],
-            [ONRAMP_PROVIDERS.Transak]: SUPPORTED_TRANSAK_ZKEVM_TOKENS,
-      },
-      [ChainId.BASE]: {
-            [ONRAMP_PROVIDERS.MoonPay]: [],
-            [ONRAMP_PROVIDERS.Mercuryo]: [],
-            [ONRAMP_PROVIDERS.Transak]: SUPPORTED_TRANSAK_BASE_TOKENS,
-      },
-      // Add more chainId mappings as needed
-};
-export type LimitCurrency = {
-      code: string;
-      maxBuyAmount: number;
-      minBuyAmount: number;
-};
-
-export type BuyLimitResponse = {
-      baseCurrency: LimitCurrency;
-      quoteCurrency: LimitCurrency;
-};
-
-type CurrencyLimits = {
-      code: string;
-      maxBuyAmount: number;
-      minBuyAmount: number;
-};
-
-interface LimitQuote {
-      baseCurrency: CurrencyLimits;
-      quoteCurrency: CurrencyLimits;
-}
-
-const TRANSAK_ENDPOINT = "https://api-stg.transak.com/api/v2";
 const MOONPAY_EBDPOINT = "https://api.moonpay.com/v3/currencies/";
 const MERCURYO_ENDPOINT = "https://api.mercuryo.io/v1.6/widget/buy/rate";
 
@@ -172,7 +54,6 @@ export const fetchLimitOfMer = async (
             };
             return { code: "Mercuryo", result, error: false };
       } catch (error) {
-            //     console.error('fetchLimitOfMer: ', error);
             return { code: "Mercuryo", result: "error.response.data", error: true };
       }
 };
@@ -214,7 +95,6 @@ export const fetchLimitOfMoonpay = async (
                   error: false,
             };
       } catch (error) {
-            //     console.error('fetchLimitOfMoonpay: ', error);
             return { code: "MoonPay", result: "error.response.data", error: true };
       }
 };
@@ -262,7 +142,6 @@ export const fetchLimitOfTransak = async (
 
             return { code: "Transak", result, error: false };
       } catch (error) {
-            //     console.error('fetchLimitOfTransak: ', error);
             return { code: "Transak", result: "error.response.data", error: true };
       }
 };

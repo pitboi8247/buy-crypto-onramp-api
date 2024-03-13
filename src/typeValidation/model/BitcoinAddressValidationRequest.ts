@@ -1,5 +1,5 @@
-import { ParsedQs } from "qs";
-import { Network } from "../validateBitcoinAddress";
+import type { ParsedQs } from "qs";
+import type { Network } from "../validateBitcoinAddress";
 
 export class GetBtcAddressValidationRequest {
       private readonly _address: string;

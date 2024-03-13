@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import {
       fetchMercuryoTransaction,
       fetchMoonPayTransaction,
@@ -6,7 +6,7 @@ import {
 } from "../transactionFetcher";
 import axios from "axios";
 import config from "../../config/config";
-import { TxSummary } from "../types";
+import type { TxSummary } from "../types";
 
 export const fetchTransactionStatus = async (req: Request, res: Response) => {
       try {

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { Cache } from "../../cache";
 import { checkCacheForDuplicateRequests } from "../../utils/checkCache";
 import {
@@ -53,7 +53,7 @@ export const MoonPayTestWebhook = async (req: Request, res: Response): Promise<v
             const timestamp = signatureData["t"];
             const signature = signatureData["s"];
 
-            let signedPayload = timestamp + ".";
+            let signedPayload = `${timestamp}.`;
             if (req.method === "POST") {
                   const payload = JSON.stringify(req.body);
                   signedPayload += payload;
