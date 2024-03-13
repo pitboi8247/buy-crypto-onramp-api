@@ -7,7 +7,7 @@ import {
 } from "../config/constants";
 import toNumber from "lodash/toNumber";
 import toUpper from "lodash/toUpper";
-import { ProviderQuotes } from "../typeValidation/types";
+import type { ProviderQuotes } from "../typeValidation/types";
 import config from "../config/config";
 export const SUPPORTED_ONRAMP_TOKENS = ["ETH", "DAI", "USDT", "USDC", "BUSD", "BNB"];
 export const DEFAULT_FIAT_CURRENCIES = [
@@ -128,9 +128,9 @@ interface LimitQuote {
       quoteCurrency: CurrencyLimits;
 }
 
-const TRANSAK_ENDPOINT = `https://api-stg.transak.com/api/v2`;
-const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
-const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
+const TRANSAK_ENDPOINT = "https://api-stg.transak.com/api/v2";
+const MOONPAY_EBDPOINT = "https://api.moonpay.com/v3/currencies/";
+const MERCURYO_ENDPOINT = "https://api.mercuryo.io/v1.6/widget/buy/rate";
 
 export const fetchLimitOfMer = async (
       inputCurrencyId: string,
@@ -226,7 +226,7 @@ export const fetchLimitOfTransak = async (
 ): Promise<ProviderQuotes> => {
       try {
             const response = await axios.get(
-                  `https://api-stg.transak.com/api/v1/pricing/public/limits/BUY?apiKey=f2b85cf2-2ea5-4ca7-aaed-96c873066458`,
+                  "https://api-stg.transak.com/api/v1/pricing/public/limits/BUY?apiKey=f2b85cf2-2ea5-4ca7-aaed-96c873066458",
                   {
                         headers: {
                               Accept: "application/json",

@@ -1,8 +1,5 @@
-import express, { Router } from "express";
-import {
-      fetchProviderAvailability,
-      fetchProviderAvailabilityGet,
-} from "./controllers/fetchProviderAvailabilities";
+import express, { type Router } from "express";
+import { fetchProviderAvailability } from "./controllers/fetchProviderAvailabilities";
 import { fetchProviderLimits } from "./controllers/fetchProviderLimits";
 import { fetchproviderQuotes } from "./controllers/fetchProviderQuotes";
 import { fetchProviderSignature } from "./controllers/fetchProviderSignatures";
@@ -28,6 +25,5 @@ router.route("/moonpay-webhook").post(MoonPayTestWebhook);
 router.route("/mercuryo-webhook").post(MercuryoTestWebhook);
 
 router.route("/fetch-provider-quotes").post(fetchproviderQuotes);
-router.route("/fetch-provider-availability-get").get(fetchProviderAvailabilityGet);
 
 export default router;

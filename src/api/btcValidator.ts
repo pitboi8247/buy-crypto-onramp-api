@@ -1,4 +1,4 @@
-import validate, { Network } from "../typeValidation/validateBitcoinAddress";
+import validate, { type Network } from "../typeValidation/validateBitcoinAddress";
 
 type BtcValidationResponse = {
       code: number;

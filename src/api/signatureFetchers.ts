@@ -1,16 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 import crypto from "crypto";
 import config from "../config/config";
 import { MOONPAY_TEST_URL, MOONPAY_URL } from "../config/constants";
 
-import { GetMoonPaySignedUrlRequest, toDto } from "../typeValidation/model/MoonpaySignedUrlRequest";
-import { GetTransakPayUrlRequest, toDtoTransak } from "../typeValidation/model/TransakUrlRequest";
-import {
-      ValidateGetMoonPaySignedUrlRequest,
-      ValidateGetTransakUrlRequest,
-} from "../typeValidation/validation";
-import { populateMoonPayUrl, populateMoonPayUrlLegacy, populateTransakUrl } from "../utils/rsa_sig";
+import { type GetTransakPayUrlRequest, toDtoTransak } from "../typeValidation/model/TransakUrlRequest";
+import { ValidateGetTransakUrlRequest } from "../typeValidation/validation";
+import { populateMoonPayUrlLegacy, populateTransakUrl } from "../utils/rsa_sig";
 
 export const generateMercuryoSig = async (req: Request, res: Response, next: NextFunction) => {
       const mercuryoParams = req.body;

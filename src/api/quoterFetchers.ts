@@ -5,12 +5,12 @@ import {
       chainIdToMoonPayNetworkId,
       chainIdToTransakNetworkId,
 } from "../config/constants";
-import { ProviderQuotes } from "../typeValidation/types";
+import type { ProviderQuotes } from "../typeValidation/types";
 import { App } from "../app";
 
-const TRANSAK_ENDPOINT = `https://api.transak.com/api/v2`;
-const MOONPAY_EBDPOINT = `https://api.moonpay.com/v3/currencies/`;
-const MERCURYO_ENDPOINT = `https://api.mercuryo.io/v1.6/widget/buy/rate`;
+const TRANSAK_ENDPOINT = "https://api.transak.com/api/v2";
+const MOONPAY_EBDPOINT = "https://api.moonpay.com/v3/currencies/";
+const MERCURYO_ENDPOINT = "https://api.mercuryo.io/v1.6/widget/buy/rate";
 
 export async function fetchMoonpayQuote(
       fiatAmount: number,

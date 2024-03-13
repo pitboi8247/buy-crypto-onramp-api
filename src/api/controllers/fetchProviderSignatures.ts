@@ -1,8 +1,11 @@
-import crypto from "crypto";
-import { NextFunction, Request, Response } from "express";
+import crypto from "node:crypto";
+import type { NextFunction, Request, Response } from "express";
 import config from "../../config/config";
 import { MOONPAY_TEST_URL, MOONPAY_URL } from "../../config/constants";
-import { GetProviderSigRequest, toDtoProviderSig } from "../../typeValidation/model/ProxiedSigRequest";
+import {
+      type GetProviderSigRequest,
+      toDtoProviderSig,
+} from "../../typeValidation/model/ProxiedSigRequest";
 import { ValidateProviderSigRequest } from "../../typeValidation/validation";
 import { populateMercuryoUrl, populateMoonPayUrl, populateTransakUrl } from "../../utils/rsa_sig";
 
@@ -34,7 +37,8 @@ export const fetchProviderSignature = async (req: Request, res: Response, next: 
 
                   const returnData = `${originalUrl}&signature=${encodeURIComponent(signature)}`;
                   return res.json({ signature: returnData });
-            } else if (request.provider === "Mercuryo") {
+            }
+            if (request.provider === "Mercuryo") {
                   const mercuryoTradeUrl = populateMercuryoUrl(request);
 
                   const hash = crypto
@@ -47,7 +51,7 @@ export const fetchProviderSignature = async (req: Request, res: Response, next: 
             }
             const transakUrl = populateTransakUrl(request);
             return res.json({ signature: transakUrl });
-      } catch (error: any) {
+      } catch (error) {
             return next(error);
       }
 };

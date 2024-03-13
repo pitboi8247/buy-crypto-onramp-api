@@ -1,5 +1,5 @@
-import crypto from "crypto";
-import { GetProviderSigRequest } from "../typeValidation/model/ProxiedSigRequest";
+import crypto from "node:crypto";
+import type { GetProviderSigRequest } from "../typeValidation/model/ProxiedSigRequest";
 import config from "../config/config";
 import {
       MERCURYO_PROD_URL,

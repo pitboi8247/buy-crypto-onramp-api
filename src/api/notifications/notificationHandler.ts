@@ -2,13 +2,14 @@ import type { BuilderNames } from "./notification/types";
 import { PancakeNotifications } from "./notification/payloadBuiler";
 import axios from "axios";
 import { sendBrowserNotification } from "./notification";
+import type { Address } from "viem";
 
 export const sendPushNotification = async (
       notificationType: BuilderNames,
-      args: Array<any>,
+      args: Array<unknown>,
       users: string[]
 ) => {
-      const notificationPayload = PancakeNotifications[notificationType](args);
+      const notificationPayload = PancakeNotifications[notificationType](args as string[]);
 
       try {
             const notifyResponse = await axios.post(

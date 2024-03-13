@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { ProviderQuotes } from "../../typeValidation/types";
+import type { NextFunction, Request, Response } from "express";
+import type { ProviderQuotes } from "../../typeValidation/types";
 import {
       fetchMercuryoAvailability,
       fetchMoonpayAvailability,
@@ -23,6 +23,8 @@ export const fetchProviderAvailability = async (req: Request, res: Response, nex
                   },
             });
       try {
+            const availabilityMapping: { [provider: string]: boolean } = {};
+
             const responsePromises: Promise<ProviderQuotes>[] = [
                   fetchMoonpayAvailability(userIp),
                   fetchMercuryoAvailability(userIp),
@@ -30,54 +32,15 @@ export const fetchProviderAvailability = async (req: Request, res: Response, nex
             ];
             const responses = await Promise.allSettled(responsePromises);
 
-            const dataPromises: ProviderQuotes[] = responses.reduce((accumulator, response) => {
-                  if (response.status === "fulfilled") {
-                        return [...accumulator, response.value];
-                  }
-                  return accumulator;
-            }, []);
+            const dataPromises: ProviderQuotes[] = responses
+                  .filter((response) => response.status === "fulfilled")
+                  .map((response) => (response.status === "fulfilled" ? response.value : null))
+                  .filter((value): value is ProviderQuotes => value !== null);
 
-            const availabilityMapping: { [provider: string]: boolean } = {};
-            dataPromises.forEach((item) => (availabilityMapping[item.code] = item.result));
-
-            return res.status(200).json({ result: availabilityMapping });
-      } catch (error) {
-            next(error);
-      }
-};
-
-export const fetchProviderAvailabilityGet = async (req: Request, res: Response, next: NextFunction) => {
-      const userIp = (req.headers["x-forwarded-for"] ||
-            req.headers["x-real-ip"] ||
-            req.headers["cf-connecting-ip"] ||
-            req.socket.remoteAddress ||
-            "") as string;
-
-      if (config.env === "development")
-            return res.status(200).json({
-                  result: {
-                        MoonPay: true,
-                        Mercuryo: true,
-                        Transak: true,
-                  },
+            // biome-ignore lint/complexity/noForEach: <explanation>
+            dataPromises.forEach((item) => {
+                  availabilityMapping[item.code] = item.result;
             });
-      try {
-            const responsePromises: Promise<ProviderQuotes>[] = [
-                  fetchMoonpayAvailability(userIp),
-                  fetchMercuryoAvailability(userIp),
-                  fetchTransakAvailability(userIp),
-            ];
-            const responses = await Promise.allSettled(responsePromises);
-
-            const dataPromises: ProviderQuotes[] = responses.reduce((accumulator, response) => {
-                  if (response.status === "fulfilled") {
-                        return [...accumulator, response.value];
-                  }
-                  return accumulator;
-            }, []);
-
-            const availabilityMapping: { [provider: string]: boolean } = {};
-            dataPromises.forEach((item) => (availabilityMapping[item.code] = item.result));
 
             return res.status(200).json({ result: availabilityMapping });
       } catch (error) {

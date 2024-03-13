@@ -1,5 +1,5 @@
-import { Response } from "express";
-import qs from "qs";
+import type { Response } from "express";
+import type qs from "qs";
 import {
       object as zObject,
       string as zString,
@@ -7,14 +7,14 @@ import {
       enum as zEnum,
       boolean as zBoolean,
 } from "zod";
-import { GetMoonPaySignedUrlRequest } from "./model/MoonpaySignedUrlRequest";
-import { GetTransakPayUrlRequest } from "./model/TransakUrlRequest";
-import { GetProviderQuotesRequest } from "./model/ProviderQuotesRequest";
-import { GetUserIpRequest } from "./model/UserIpRequest";
-import { ParsedMercuryGet, ParsedMercuryPOST } from "./types";
-import { GetProviderLimitRequest } from "./model/ProviderLimitRequest";
-import { GetProviderSigRequest } from "./model/ProxiedSigRequest";
-import { GetBtcAddressValidationRequest } from "./model/BitcoinAddressValidationRequest";
+import type { GetMoonPaySignedUrlRequest } from "./model/MoonpaySignedUrlRequest";
+import type { GetTransakPayUrlRequest } from "./model/TransakUrlRequest";
+import type { GetProviderQuotesRequest } from "./model/ProviderQuotesRequest";
+import type { GetUserIpRequest } from "./model/UserIpRequest";
+import type { ParsedMercuryGet, ParsedMercuryPOST } from "./types";
+import type { GetProviderLimitRequest } from "./model/ProviderLimitRequest";
+import type { GetProviderSigRequest } from "./model/ProxiedSigRequest";
+import type { GetBtcAddressValidationRequest } from "./model/BitcoinAddressValidationRequest";
 
 export const zQueryMoonPay = zObject({
       type: zString(),
@@ -88,7 +88,7 @@ export const validateMercuryoSchema = (
       const parsed = mercuryoSigningAPISchema.shape[indexer].safeParse(queryParsed);
       if (parsed.success === false)
             return res.status(400).json({ success: false, message: JSON.stringify(queryParsed) });
-      else return parsed;
+      return parsed;
 };
 
 export const ValidateGetMoonPaySignedUrlRequest = (
@@ -103,13 +103,13 @@ export const ValidateGetMoonPaySignedUrlRequest = (
       if (success) {
             const data = result.data as GetMoonPaySignedUrlRequest;
             return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Moonpay Url signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
+      }
+      return {
+            success,
+            data: JSON.stringify(
+                  `Moonpay Url signature schema Validation Error ${JSON.stringify(result)}`
+            ).replace(/\\/g, ""),
+      };
 };
 
 export const ValidateGetTransakUrlRequest = (
@@ -124,13 +124,13 @@ export const ValidateGetTransakUrlRequest = (
       if (success) {
             const data = result.data as GetTransakPayUrlRequest;
             return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Transak Url signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
+      }
+      return {
+            success,
+            data: JSON.stringify(
+                  `Transak Url signature schema Validation Error ${JSON.stringify(result)}`
+            ).replace(/\\/g, ""),
+      };
 };
 
 export const ValidateProviderSigRequest = (
@@ -145,13 +145,13 @@ export const ValidateProviderSigRequest = (
       if (success) {
             const data = result.data as GetProviderSigRequest;
             return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Transak Url signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
+      }
+      return {
+            success,
+            data: JSON.stringify(
+                  `Transak Url signature schema Validation Error ${JSON.stringify(result)}`
+            ).replace(/\\/g, ""),
+      };
 };
 
 export const ValidateeProviderQuotesRequest = (
@@ -166,13 +166,13 @@ export const ValidateeProviderQuotesRequest = (
       if (success) {
             const data = result.data as GetProviderQuotesRequest;
             return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
+      }
+      return {
+            success,
+            data: JSON.stringify(
+                  `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
+            ).replace(/\\/g, ""),
+      };
 };
 
 export const ValidateeProviderLimitRequest = (
@@ -187,13 +187,13 @@ export const ValidateeProviderLimitRequest = (
       if (success) {
             const data = result.data as GetProviderLimitRequest;
             return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
+      }
+      return {
+            success,
+            data: JSON.stringify(
+                  `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
+            ).replace(/\\/g, ""),
+      };
 };
 
 export const ValidateUserIpRequest = (
@@ -208,13 +208,13 @@ export const ValidateUserIpRequest = (
       if (success) {
             const data = result.data as GetUserIpRequest;
             return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
+      }
+      return {
+            success,
+            data: JSON.stringify(
+                  `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
+            ).replace(/\\/g, ""),
+      };
 };
 
 export const ValidateBitcoinAddressRes = (

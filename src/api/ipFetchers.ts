@@ -1,10 +1,10 @@
 import axios from "axios";
 import config from "../config/config";
-import { ProviderQuotes } from "../typeValidation/types";
+import type { ProviderQuotes } from "../typeValidation/types";
 import { App } from "./../app";
 import geoip from "geoip-lite";
 import { whereAlpha2 } from "iso-3166-1";
-import { CountryInfo } from "./types";
+import type { CountryInfo } from "./types";
 
 const findCountryByAlpha2 = (
       alpha2Code: string,

@@ -1,9 +1,9 @@
-import { NextFunction } from "express";
+import type { NextFunction } from "express";
 import { validateBitcoinAddress } from "../btcValidator";
-import { Response } from "express";
-import { Request } from "express";
+import type { Response } from "express";
+import type { Request } from "express";
 import {
-      GetBtcAddressValidationRequest,
+      type GetBtcAddressValidationRequest,
       toDtoUserBtcValidation,
 } from "../../typeValidation/model/BitcoinAddressValidationRequest";
 import { ValidateBitcoinAddressRes } from "../../typeValidation/validation";
@@ -19,7 +19,7 @@ export const fetchBtcAddressValidation = async (req: Request, res: Response, nex
       try {
             const isAddressValid = validateBitcoinAddress(request.address, request.network);
             return res.json({ result: isAddressValid });
-      } catch (error: any) {
+      } catch (error) {
             return next(error);
       }
 };

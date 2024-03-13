@@ -1,7 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import { GetProviderQuotesRequest, toDtoQuotes } from "../../typeValidation/model/ProviderQuotesRequest";
-import { ProviderQuotes } from "../../typeValidation/types";
-import { ValidateeProviderQuotesRequest } from "../../typeValidation/validation";
+import type { NextFunction, Request, Response } from "express";
+import type { ProviderQuotes } from "../../typeValidation/types";
 import {
       fetchMercuryoQuote,
       fetchMercuryoQuoteSell,
@@ -9,15 +7,20 @@ import {
       fetchTransakQuote,
 } from "../quoterFetchers";
 import { convertQuoteToBase } from "../../utils/utils";
+import {
+      type GetProviderQuotesRequest,
+      toDtoQuotes,
+} from "../../typeValidation/model/ProviderQuotesRequest";
+import { ValidateeProviderQuotesRequest } from "../../typeValidation/validation";
 
 export const fetchproviderQuotes = async (req: Request, res: Response, next: NextFunction) => {
-      const request = req.body; // GetProviderQuotesRequest = toDtoQuotes(req.body);
-      // const validationResult = ValidateeProviderQuotesRequest(request);
+      const request: GetProviderQuotesRequest = toDtoQuotes(req.body);
+      const validationResult = ValidateeProviderQuotesRequest(request);
 
-      // if (!validationResult.success) {
-      //       throw new Error(validationResult.data as string);
-      // }
-      const { fiatCurrency, cryptoCurrency, fiatAmount, network } = request as any;
+      if (!validationResult.success) {
+            throw new Error(validationResult.data as string);
+      }
+      const { fiatCurrency, cryptoCurrency, fiatAmount, network } = request;
       const isFiat = true;
       console.log(isFiat);
       try {
@@ -30,12 +33,10 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
             ];
             const responses = await Promise.allSettled(responsePromises);
 
-            const dataPromises: ProviderQuotes[] = responses.reduce((accumulator, response) => {
-                  if (response.status === "fulfilled") {
-                        return [...accumulator, response.value];
-                  }
-                  return accumulator;
-            }, []);
+            const dataPromises: ProviderQuotes[] = responses
+                  .filter((response) => response.status === "fulfilled")
+                  .map((response) => (response.status === "fulfilled" ? response.value : null))
+                  .filter((value): value is ProviderQuotes => value !== null);
 
             const providerQuotes = dataPromises.map((item: ProviderQuotes) => {
                   if (item.code === "MoonPay" && !item.error) {

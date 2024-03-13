@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { Fraction } from "@pancakeswap/swap-sdk-core";
-import { Address } from "viem";
+import type { Address } from "viem";
 import { ChainId } from "@pancakeswap/sdk";
 
 export function parseNumberToFraction(num: number, precision = 6) {
@@ -38,14 +38,13 @@ export const fixPrefix = (arr: string[]): string[] => {
             const parts = item.split(":");
             if (parts.length === 3 && parts[0] === "eip155" && parts[1]) {
                   return `eip155:1:${parts[2]}`;
-            } else {
-                  return item; // If the format is not as expected, return the original item
             }
+            return item; // If the format is not as expected, return the original item
       });
       return fixedArr;
 };
 
-export const addPrefix = (arr: any): string[] => {
+export const addPrefix = (arr): string[] => {
       const fixedArr = arr.map((item) => `eip155:1:${item}`);
       return fixedArr;
 };
@@ -56,37 +55,6 @@ export const arrayToString = (arr: string[]) => {
 
 export const capitalizeFirstLetter = (str: string): string => {
       return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-export const formatDollarNumber = (value: number): string => {
-      if (value < 1000) {
-            return value.toString();
-      } else if (value < 1000000) {
-            return Math.floor(value / 1000) + "k";
-      } else {
-            return Math.floor(value / 1000000) + "M";
-      }
-};
-
-export const formatedAdjustedDateOverflow = (
-      second: number,
-      minute: number,
-      hour: number
-): { newSecond: number; newMinute: number; newHour: number } => {
-      let newSecond = second;
-      let newMinute = minute;
-      let newHour = hour;
-
-      if (second >= 60) {
-            newSecond = second -= 60;
-            newMinute = minute === 60 ? (hour += 1) : (minute += 1);
-      }
-
-      if (minute >= 60) {
-            newMinute = minute -= 60;
-            newHour = hour += 1;
-      }
-      return { newSecond, newMinute, newHour };
 };
 
 export const calculatePercentageIncrease = (oldValue: number, newValue: number): number => {

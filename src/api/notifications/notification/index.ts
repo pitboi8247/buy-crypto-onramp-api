@@ -11,7 +11,7 @@ export async function sendBrowserNotification(title: string, body: string, users
                         "x-secure-token": "nTu3Ls0rJzW7cVpRyZkFgUqHxJ3i1sXo",
                   },
             });
-      } catch (error: any) {
+      } catch (error) {
             console.error("Failed to send browser notification", error.message);
       }
 }
