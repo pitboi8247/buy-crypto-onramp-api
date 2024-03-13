@@ -1,5 +1,4 @@
-import { Address } from "viem";
-import { BuilderNames } from "./notification/types";
+import type { BuilderNames } from "./notification/types";
 import { PancakeNotifications } from "./notification/payloadBuiler";
 import axios from "axios";
 import { sendBrowserNotification } from "./notification";
@@ -7,18 +6,18 @@ import { sendBrowserNotification } from "./notification";
 export const sendPushNotification = async (
       notificationType: BuilderNames,
       args: Array<any>,
-      users: Address[]
+      users: string[]
 ) => {
       const notificationPayload = PancakeNotifications[notificationType](args);
 
       try {
             const notifyResponse = await axios.post(
-                  `https://notify.walletconnect.com/e542ff314e26ff34de2d4fba98db70bb/notify`,
+                  "https://notify.walletconnect.com/e542ff314e26ff34de2d4fba98db70bb/notify",
                   notificationPayload, // Pass the payload directly as data
                   {
                         headers: {
                               "Content-Type": "application/json",
-                              Authorization: `Bearer 93a13775-9e9f-46c6-a15f-524dfa979c39`,
+                              Authorization: "Bearer 93a13775-9e9f-46c6-a15f-524dfa979c39",
                         },
                   }
             );

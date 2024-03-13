@@ -2,33 +2,37 @@ import { Request, Response } from "express";
 import { Cache } from "../../cache";
 import { checkCacheForDuplicateRequests } from "../../utils/checkCache";
 import {
-      baseCurrencySchema,
-      currencySchema,
-      dataSchema,
-      getValidQuoteSchema,
-      myDataSchema,
+      ValidateMercuryoWebHookPayload,
+      ValidateMoonPayoWebHookPayload,
+      ValidateTransakWebHookPayload,
 } from "../../typeValidation/webhookValidation";
 import { generateHMAC } from "../../utils/rsa_sig";
 import config from "../../config/config";
 import jwt from "jsonwebtoken";
 import { sendPushNotification } from "../notifications/notificationHandler";
 import { BuilderNames } from "../notifications/notification/types";
-import { TransakWebhookEventVerified, WebhookResponse } from "./types";
+import type {
+      MercuryoWebhookResponse,
+      MoonPayWebhookResponse,
+      TransakWebhookEventVerified,
+} from "./types";
+import { notificationBodies } from "../notifications/notification/payloadBuiler";
 
-const MoonPayCache = new Cache<string>(60);
-const MercuryoCache = new Cache<string>(60);
-const TransakCache = new Cache<string>(60);
+const MoonPayCache = new Cache<string>(180);
+const MercuryoCache = new Cache<string>(180);
+const TransakCache = new Cache<string>(180);
 
 export const MoonPayTestWebhook = async (req: Request, res: Response): Promise<void> => {
-      const MoonPayEvent = req.body.data;
-      const baseCurrency = baseCurrencySchema.parse(MoonPayEvent.baseCurrency);
-      const currency = currencySchema.parse(MoonPayEvent.currency);
-      const quote = getValidQuoteSchema.parse(MoonPayEvent.getValidQuote);
-      const data = dataSchema.parse(MoonPayEvent);
+      const MoonPayEvent = req.body as MoonPayWebhookResponse;
+      const moonpayValidationResult = ValidateMoonPayoWebHookPayload(MoonPayEvent);
+
+      if (moonpayValidationResult.success === false) {
+            throw new Error(moonpayValidationResult.data);
+      }
 
       const isDuplicateRequest = checkCacheForDuplicateRequests(
-            data.status,
-            quote.transactionId,
+            MoonPayEvent.data.status,
+            MoonPayEvent.data.getValidQuote.transactionId,
             MoonPayCache
       );
       if (isDuplicateRequest) {
@@ -40,6 +44,7 @@ export const MoonPayTestWebhook = async (req: Request, res: Response): Promise<v
             const elements = moonpaySignatureV2Header.split(",");
 
             const signatureData = {};
+            // biome-ignore lint/complexity/noForEach: <explanation>
             elements.forEach((element) => {
                   const [prefix, value] = element.split("=");
                   signatureData[prefix.trim()] = value.trim();
@@ -57,25 +62,47 @@ export const MoonPayTestWebhook = async (req: Request, res: Response): Promise<v
                   signedPayload += searchString;
             }
 
-            const expectedSignature = generateHMAC(config.mercuryoSecretKey, signedPayload);
+            const expectedSignature = generateHMAC(config.moonpayTestWebhookKey, signedPayload);
+
             if (signature === expectedSignature) {
-                  const extractedData: WebhookResponse = {
-                        walletAddress: data.walletAddress,
-                        fiatAmount: Number(quote.baseCurrencyAmount),
-                        cryptoAmount: Number(quote.quoteCurrencyAmount),
-                        fiatCurrency: baseCurrency.code.toUpperCase(),
-                        cryptoCurrency: currency.code.toUpperCase(),
-                        status: data.status,
-                        transactionId: quote.transactionId,
-                        updatedAt: quote.updatedAt,
-                        network: currency.metadata.networkCode,
-                        providerFee: quote.feeAmount,
-                        networkFee: quote.networkFeeAmount,
-                        rate: quote.quoteCurrencyPrice,
-                        type: "MoonPay",
-                  };
-                  // websocketserver.emitMostRecentMessges(extractedData);
-                  res.status(200).send({ "Signatures match!": { extractedData } });
+                  const baseCurrencyId = MoonPayEvent.data.currency.code.toUpperCase();
+                  const quoteCurrencyAmount = MoonPayEvent.data.getValidQuote.quoteCurrencyAmount;
+                  const { status, walletAddress } = MoonPayEvent.data;
+
+                  if (status === "pending") {
+                        const body = notificationBodies.TransactionProcessingNotification(
+                              quoteCurrencyAmount,
+                              baseCurrencyId
+                        );
+                        sendPushNotification(
+                              BuilderNames.TransactionProcessingNotification,
+                              [[walletAddress], "MoonPay", body],
+                              [walletAddress]
+                        );
+                  }
+                  if (status === "completed") {
+                        const body = notificationBodies.TransactionCompleteNotification(
+                              quoteCurrencyAmount,
+                              baseCurrencyId
+                        );
+                        sendPushNotification(
+                              BuilderNames.TransactionCompleteNotification,
+                              [[walletAddress], "MoonPay", body],
+                              [walletAddress]
+                        );
+                  }
+                  if (status === "failed") {
+                        const body = notificationBodies.TransactionFailedNotification(
+                              quoteCurrencyAmount,
+                              baseCurrencyId
+                        );
+                        sendPushNotification(
+                              BuilderNames.TransactionFailedNotification,
+                              [[walletAddress], "MoonPay", body],
+                              [walletAddress]
+                        );
+                  }
+                  res.send({ "webhook event verified": MoonPayEvent });
             } else {
                   res.status(400).send({
                         "Signatures do not match!": { signature, expectedSignature },
@@ -87,12 +114,16 @@ export const MoonPayTestWebhook = async (req: Request, res: Response): Promise<v
 };
 
 export const MercuryoTestWebhook = async (req: Request, res: Response): Promise<void> => {
-      const mercuryoEvent = myDataSchema.parse(req.body).data;
-      const { status, merchant_transaction_id } = mercuryoEvent;
+      const mercuryoResponse = req.body as MercuryoWebhookResponse;
+      const mercuryoEvent = ValidateMercuryoWebHookPayload(mercuryoResponse);
+
+      if (mercuryoEvent.success === false) {
+            throw new Error(mercuryoEvent.data);
+      }
 
       const isDuplicateRequest = checkCacheForDuplicateRequests(
-            status,
-            merchant_transaction_id,
+            mercuryoEvent.data.status,
+            mercuryoEvent.data.merchant_transaction_id,
             MercuryoCache
       );
       if (isDuplicateRequest) {
@@ -101,29 +132,45 @@ export const MercuryoTestWebhook = async (req: Request, res: Response): Promise<
       }
       const mercuryoSignature = req.headers["x-signature"] as string;
       if (mercuryoSignature) {
-            const expectedSignature = generateHMAC(config.mercuryoSignKey, JSON.stringify(req.body));
-            if (mercuryoSignature === expectedSignature) {
-                  let overideStatus = status;
-                  if (status === "new") overideStatus = "pending";
-                  if (status === "order_failed") overideStatus = "failed";
+            const expectedSignature = generateHMAC(
+                  config.mercuryoSignKey,
+                  JSON.stringify(mercuryoResponse)
+            );
 
-                  const extractedData: WebhookResponse = {
-                        walletAddress: mercuryoEvent.user.uuid4,
-                        fiatAmount: Number(mercuryoEvent.fiat_amount),
-                        cryptoAmount: Number(mercuryoEvent.amount),
-                        fiatCurrency: mercuryoEvent.fiat_currency.toUpperCase(),
-                        cryptoCurrency: mercuryoEvent.currency.toUpperCase(),
-                        status: overideStatus,
-                        transactionId: mercuryoEvent.merchant_transaction_id,
-                        updatedAt: mercuryoEvent.updated_at,
-                        network: "",
-                        providerFee: 0,
-                        networkFee: 0,
-                        rate: 0,
-                        type: "Mercuryo",
-                  };
-                  // websocketserver.emitMostRecentMessges(extractedData);
-                  res.send({ "webhook event verified": extractedData });
+            if (mercuryoSignature === expectedSignature) {
+                  const { status, amount, currency } = mercuryoEvent.data;
+                  const walletAddress = "";
+                  if (status === "pending") {
+                        const body = notificationBodies.TransactionProcessingNotification(
+                              amount,
+                              currency
+                        );
+                        sendPushNotification(
+                              BuilderNames.TransactionProcessingNotification,
+                              [[walletAddress], "Mercuryo", body],
+                              [walletAddress]
+                        );
+                  }
+                  if (status === "paid") {
+                        const body = notificationBodies.TransactionCompleteNotification(
+                              amount,
+                              currency
+                        );
+                        sendPushNotification(
+                              BuilderNames.TransactionCompleteNotification,
+                              [[walletAddress], "Mercuryo", body],
+                              [walletAddress]
+                        );
+                  }
+                  if (status === "order_failed") {
+                        const body = notificationBodies.TransactionFailedNotification(amount, currency);
+                        sendPushNotification(
+                              BuilderNames.TransactionFailedNotification,
+                              [[walletAddress], "Mercuryo", body],
+                              [walletAddress]
+                        );
+                  }
+                  res.send({ "webhook event verified": mercuryoEvent });
             } else {
                   res.status(400).send("Signatures do not match!");
             }
@@ -133,15 +180,17 @@ export const MercuryoTestWebhook = async (req: Request, res: Response): Promise<
 };
 
 export const TransakWebhook = async (req: Request, res: Response): Promise<void> => {
-      const transakEvent = req.body;
       const accessToken =
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBUElfS0VZIjoiZjJiODVjZjItMmVhNS00Y2E3LWFhZWQtOTZjODczMDY2NDU4IiwiaWF0IjoxNzA5NDM0Njk1LCJleHAiOjE3MTAwMzk0OTV9.OWIALaGKqIcvr_DSKGY0IHXQHlpc5x6z0D8kIoqBGwU";
-      const decodedData = jwt.verify(transakEvent.data, accessToken);
+      const transakEvent = jwt.verify(req.body.data, accessToken) as TransakWebhookEventVerified;
+      const transakValidationResult = ValidateTransakWebHookPayload(transakEvent);
 
-      console.log(decodedData);
-      const webhookData = decodedData as TransakWebhookEventVerified;
-      const status = webhookData.eventID;
-      const { partnerOrderId, walletAddress, cryptoAmount, cryptoCurrency } = webhookData.webhookData;
+      if (transakValidationResult.success === false) {
+            throw new Error(transakValidationResult.data);
+      }
+
+      const status = transakEvent.eventID;
+      const { partnerOrderId, walletAddress, cryptoAmount, cryptoCurrency } = transakEvent.webhookData;
 
       const isDuplicateRequest = checkCacheForDuplicateRequests(status, partnerOrderId, TransakCache);
       if (isDuplicateRequest) {
@@ -149,28 +198,34 @@ export const TransakWebhook = async (req: Request, res: Response): Promise<void>
             return;
       }
       if (status === "ORDER_PROCESSING") {
-            const body = `Your transaction for ${cryptoAmount} ${cryptoCurrency} is processing. you will be notified once the funds arrive to your wallet.`;
+            const body = notificationBodies.TransactionProcessingNotification(
+                  cryptoAmount,
+                  cryptoCurrency
+            );
             sendPushNotification(
                   BuilderNames.TransactionProcessingNotification,
                   [[walletAddress], "Transak", body],
-                  [walletAddress as any]
+                  [walletAddress]
             );
       }
       if (status === "ORDER_COMPLETED") {
-            const body = `Your transaction for ${cryptoAmount} ${cryptoCurrency} is completed. the funds should now be in your wallet.`;
+            const body = notificationBodies.TransactionCompleteNotification(
+                  cryptoAmount,
+                  cryptoCurrency
+            );
             sendPushNotification(
                   BuilderNames.TransactionCompleteNotification,
                   [[walletAddress], "Transak", body],
-                  [walletAddress as any]
+                  [walletAddress]
             );
       }
       if (status === "ORDER_FAILED") {
-            const body = `Your transaction for ${cryptoAmount} ${cryptoCurrency} Failed. Sorry about this please reaxh out to support to follow up on the issue.`;
+            const body = notificationBodies.TransactionFailedNotification(cryptoAmount, cryptoCurrency);
             sendPushNotification(
                   BuilderNames.TransactionFailedNotification,
                   [[walletAddress], "Transak", body],
-                  [walletAddress as any]
+                  [walletAddress]
             );
       }
-      res.send({ "webhook event verified": decodedData });
+      res.send({ "webhook event verified": transakEvent });
 };

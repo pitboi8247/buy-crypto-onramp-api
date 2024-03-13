@@ -229,11 +229,11 @@ export const ValidateBitcoinAddressRes = (
       if (success) {
             const data = result.data as GetBtcAddressValidationRequest;
             return { success, data };
-      } else
-            return {
-                  success,
-                  data: JSON.stringify(
-                        `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
-                  ).replace(/\\/g, ""),
-            };
+      }
+      return {
+            success,
+            data: JSON.stringify(
+                  `Provider quotes signature schema Validation Error ${JSON.stringify(result)}`
+            ).replace(/\\/g, ""),
+      };
 };

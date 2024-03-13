@@ -38,7 +38,7 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
             }, []);
 
             const providerQuotes = dataPromises.map((item: ProviderQuotes) => {
-                  if (item.code === "MoonPay" && !item.error && Number(network) !== 324) {
+                  if (item.code === "MoonPay" && !item.error) {
                         const {
                               baseCurrencyAmount,
                               networkFeeAmount,
@@ -109,7 +109,7 @@ export const fetchproviderQuotes = async (req: Request, res: Response, next: Nex
                               fiatCurrency: fiatCurrency.toUpperCase(),
                               cryptoCurrency: cryptoCurrency.toUpperCase(),
                               provider: item.code,
-                              price: 1 / data.marketConversionPrice,
+                              price: 1 / data.conversionPrice,
                         };
                   }
                   return {

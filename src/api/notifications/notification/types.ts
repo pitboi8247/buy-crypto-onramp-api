@@ -1,20 +1,3 @@
-export enum NotificationBodyKeys {
-      Lottery1 = "lottery1",
-      Lottery2 = "lottery2",
-      Lottery3 = "lottery3",
-      Balances = "balances",
-      Prices = "prices",
-      Predictions1 = "predictions1",
-      Predictions2 = "predictions2",
-      Predictions3 = "predictions3",
-      Farms = "farms",
-      TradingReward1 = "tradingReward1",
-      TradingReward2 = "tradingReward2",
-      TradingReward3 = "tradingReward3",
-      Liquidity1 = "liquidity1",
-      Liquidity2 = "liquidity2",
-}
-
 export enum BuilderNames {
       TransactionProcessingNotification = "TransactionProcessingNotification",
       TransactionCompleteNotification = "TransactionCompleteNotification",
@@ -35,8 +18,8 @@ export enum ScopeIdsToName {
 export type pushNotification = {
       title: string;
       body: string;
-      icon: string;
-      url: string;
+      icon?: string;
+      url?: string;
       type: string;
 };
 
@@ -46,42 +29,24 @@ export type NotificationPayload = {
 };
 
 export type NotificationBody = {
-      [NotificationBodyKeys.Lottery1]: (
-            timeRemaining: string,
-            cakeAmount: string,
-            cakeAmountUSD: string
+      [BuilderNames.TransactionProcessingNotification]: (
+            amount: string | number,
+            currency: string
       ) => string;
-      [NotificationBodyKeys.Lottery2]: (timeRemaining: string) => string;
-      [NotificationBodyKeys.Lottery3]: (roundId: string) => string;
-      [NotificationBodyKeys.Balances]: () => string;
-      [NotificationBodyKeys.Prices]: (
-            token: string,
-            isUp: string,
-            percentageChange: string,
-            oldPrice: string,
-            currentPrice: string
+      [BuilderNames.TransactionCompleteNotification]: (
+            amount: string | number,
+            currency: string
       ) => string;
-      [NotificationBodyKeys.Predictions1]: (asset: "CAKE" | "BNB", roundId: string) => string;
-      [NotificationBodyKeys.Predictions2]: (asset: "CAKE" | "BNB", roundId: string) => string;
-      [NotificationBodyKeys.Predictions3]: () => string;
-      [NotificationBodyKeys.Farms]: (
-            farms: string,
-            chainId: string,
-            currentApr: string,
-            lastApr: string,
-            isMultiple: boolean
+      [BuilderNames.TransactionFailedNotification]: (
+            amount: string | number,
+            currency: string
       ) => string;
-      [NotificationBodyKeys.TradingReward1]: (reward: string, timeRemainingToClaim: string) => string;
-      [NotificationBodyKeys.TradingReward2]: () => string;
-      [NotificationBodyKeys.TradingReward3]: () => string;
-      [NotificationBodyKeys.Liquidity1]: (chainId: string, lpSymbols: string) => string;
-      [NotificationBodyKeys.Liquidity2]: (chainId: string, lpSymbol: string) => string;
 };
 export interface PancakeNotificationBuilders {
-      ["TransactionProcessingNotification"]: {
+      TransactionProcessingNotification: {
             TransactionProcessingNotification: () => pushNotification;
       };
-      ["TransactionCompleteNotification"]: {
+      TransactionCompleteNotification: {
             TransactionCompleteNotification: (
                   token1: string,
                   token2: string,
@@ -89,5 +54,5 @@ export interface PancakeNotificationBuilders {
                   token2Amount: string
             ) => pushNotification;
       };
-      ["TransactionFailedNotification"]: { TransactionFailedNotification: () => pushNotification };
+      TransactionFailedNotification: { TransactionFailedNotification: () => pushNotification };
 }

@@ -31,7 +31,7 @@ export const populateMoonPayUrl = (moonPayParams: GetProviderSigRequest) => {
             moonPayParams.amount
       }&externalTransactionId=${moonPayParams.externalTransactionId}&walletAddress=${
             moonPayParams.walletAddress
-      }&redirectURL=${encodeURIComponent(moonPayParams.redirectUrl)}`;
+      }&redirectURL=`;
 };
 
 export const populateTransakUrl = (transakParams: GetProviderSigRequest) => {
